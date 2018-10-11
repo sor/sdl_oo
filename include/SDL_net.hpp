@@ -145,7 +145,7 @@ namespace SDL
 				auto ret = C::SDLNet_TCP_Accept( *this );
 				return (ret == NULL)
 					? TCPsocket()
-					: ret;
+					: TCPsocket(ret);
 			}
 
 			__alwaysinline
