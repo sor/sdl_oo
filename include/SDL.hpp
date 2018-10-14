@@ -122,6 +122,9 @@ namespace SDL
 		lhs = static_cast<Init::Flags>( static_cast<Uint32>( lhs ) | static_cast<Uint32>( rhs ) );
 		return lhs;
 	}
+
+	// this is just here to determine if static linking worked
+	void dummy();
 }
 
 #endif
