@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 project(sdl_oo)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_library(sdl_oo src/library.cpp src/library.h)
+add_library(sdl_oo src/SDL.cpp include/SDL.hpp)
 
 include(FindPkgConfig)
 
