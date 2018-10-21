@@ -126,15 +126,15 @@ namespace SDL
 
 		// FIXME: is this portable? needs -fno-strict-aliasing to work :(
 		__alwaysinline
-		Type&
-		type() noexcept
+		const Type&
+		type() const noexcept
 		{
-			return reinterpret_cast<Type&>( this->self.type );
+			return reinterpret_cast<const Type&>( this->self.type );
 		}
 
 		__alwaysinline
-		C::SDL_KeyboardEvent&
-		Keyboard() noexcept
+		const C::SDL_KeyboardEvent&
+		Keyboard() const noexcept
 		{
 			return this->self.key;
 		}
@@ -154,29 +154,29 @@ namespace SDL
 		*/
 
 		__alwaysinline
-		C::SDL_MouseButtonEvent&
-		MouseButton() noexcept
+		const C::SDL_MouseButtonEvent&
+		MouseButton() const noexcept
 		{
 			return this->self.button;
 		}
 
 		__alwaysinline
-		C::SDL_MouseMotionEvent&
-		MouseMotion() noexcept
+		const C::SDL_MouseMotionEvent&
+		MouseMotion() const noexcept
 		{
 			return this->self.motion;
 		}
 
 		__alwaysinline
-		C::SDL_JoyAxisEvent&
-		JoyAxis() noexcept
+		const C::SDL_JoyAxisEvent&
+		JoyAxis() const noexcept
 		{
 			return this->self.jaxis;
 		}
 
 		__alwaysinline
-		C::SDL_JoyButtonEvent&
-		JoyButton() noexcept
+		const C::SDL_JoyButtonEvent&
+		JoyButton() const noexcept
 		{
 			return this->self.jbutton;
 		}

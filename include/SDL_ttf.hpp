@@ -117,6 +117,18 @@ namespace SDL
 			{
 				return C::TTF_RenderUTF8_Blended(*this, text.c_str(), fg);
 			}
+
+			__alwaysinline
+			SDL::Surface RenderUTF8_Blended_Wrapped(const char *text, SDL::Color fg, SDL::Uint32 wrapLength)
+			{
+				return C::TTF_RenderUTF8_Blended_Wrapped(*this, text, fg, wrapLength);
+			}
+
+			__alwaysinline
+			SDL::Surface RenderUTF8_Blended_Wrapped(const std::string text, SDL::Color fg, SDL::Uint32 wrapLength)
+			{
+				return C::TTF_RenderUTF8_Blended_Wrapped(*this, text.c_str(), fg, wrapLength);
+			}
 		};
 	}
 }

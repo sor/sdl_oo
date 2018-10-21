@@ -25,7 +25,14 @@ namespace SDL
 			this->x = x;
 			this->y = y;
 		}
-		
+
+		/*__alwaysinline
+		bool
+		In(const Rect & rect) const
+		{
+			return C::SDL_PointInRect(this, static_cast<const C::SDL_Rect*>(&rect));
+		}*/
+
 		__alwaysinline
 		Point
 		operator+( const Point & other ) const
@@ -57,7 +64,7 @@ namespace SDL
 			y -= other.y;
 			return *this;
 		}
-
+		
 		__alwaysinline
 		Point
 		operator*( const int scale ) const
@@ -72,6 +79,22 @@ namespace SDL
 			return Point(
 				static_cast<int>( x * scale ),
 				static_cast<int>( y * scale ) );
+		}
+
+		__alwaysinline
+		Point
+		operator/( const int scale ) const
+		{
+			return Point( x / scale, y / scale );
+		}
+
+		__alwaysinline
+		Point
+		operator/( const float scale ) const
+		{
+			return Point(
+				static_cast<int>( x / scale ),
+				static_cast<int>( y / scale ) );
 		}
 
 		__alwaysinline
@@ -132,6 +155,29 @@ namespace SDL
 			this->y = y;
 			this->w = w;
 			this->h = h;
+		}
+
+		__alwaysinline
+		bool
+		Contains(const Point & pos) const
+		{
+			return C::SDL_PointInRect(&pos, this);
+		}
+
+		__alwaysinline
+		Rect
+		operator+(const Point & pos) const
+		{
+			return Rect(x + pos.x, y + pos.y, w, h);
+		}
+
+		__alwaysinline
+		Rect&
+		operator+=(const Point & pos)
+		{
+			x += pos.x;
+			y += pos.y;
+			return *this;
 		}
 	};
 }

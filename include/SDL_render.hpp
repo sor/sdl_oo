@@ -187,6 +187,9 @@ namespace SDL
 		// Draws the texture at the given position with its normal size
 		void Draw( const Point & pos ) noexcept;
 
+		// Draws the texture at the given position with its normal size, stretching the image to fit dst
+		void Draw( const Rect & dstrect ) noexcept;
+
 		// Draws the texture at the given position with its normal size, given a subset
 		void Draw( const Point & pos, const Rect & srcrect ) noexcept;
 
@@ -221,13 +224,13 @@ namespace SDL
 	__alwaysinline
 	int Renderer::Copy( Texture & texture ) noexcept
 	{
-		return C::SDL_RenderCopy( *this, texture, NULL, NULL );
+		return C::SDL_RenderCopy( *this, texture, nullptr, nullptr);
 	}
 
 	__alwaysinline
 	int Renderer::Copy( Texture & texture, const Rect & dstrect ) noexcept
 	{
-		return C::SDL_RenderCopy( *this, texture, NULL, &dstrect );
+		return C::SDL_RenderCopy( *this, texture, nullptr, &dstrect );
 	}
 
 	__alwaysinline
@@ -282,12 +285,20 @@ namespace SDL
 		format = static_cast<PixelFormat::Type>( fmt );
 	}
 
-
 	// Draws the texture at the given position with its normal size
 	__alwaysinline
 	void Texture::Draw( const Point & pos ) noexcept
 	{
 		this->rend.Copy( *this, Rect( pos.x, pos.y, this->w, this->h ) );
+	}
+
+	// Draws the texture at the given position with its normal size, stretching the image to fit dst
+	__alwaysinline
+	void Texture::Draw( const Rect & dstrect ) noexcept
+	{
+		this->rend.Copy(
+			*this,
+			dstrect);
 	}
 
 	// Draws the texture at the given position with its normal size, given a subset
