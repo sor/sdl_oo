@@ -161,7 +161,7 @@ namespace SDL
 		bool
 		Contains(const Point & pos) const
 		{
-			return C::SDL_PointInRect(&pos, this);
+			return C::SDL_PointInRect(&pos, this) == Bool::TRUE;
 		}
 
 		__alwaysinline
