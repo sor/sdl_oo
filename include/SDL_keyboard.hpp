@@ -27,13 +27,14 @@ namespace SDL
 
 		__alwaysinline
 		Keysym( const C::SDL_Keysym & other )
-		:	self( other )
+			: self( other )
 		{}
 
 		__alwaysinline
-		Scancode::Code
+		Scancode
 		scancode()
 		{
+			return Scancode(self.scancode);
 			return static_cast<Scancode::Code>( self.scancode );
 		}
 

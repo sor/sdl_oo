@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 project(sdl_oo)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra") #  -Wall -Wextra
 
 add_library(sdl_oo src/SDL.cpp include/SDL.hpp)
 
@@ -15,6 +16,7 @@ pkg_search_module(SDL2MIXER REQUIRED SDL2_mixer>=2.0.0)
 pkg_search_module(SDL2IMAGE REQUIRED SDL2_image>=2.0.0)
 
 include_directories(
+        ${PROJECT_SOURCE_DIR}/include
         ${SDL2_INCLUDE_DIRS}
         ${SDL2TTF_INCLUDE_DIRS}
         ${SDL2NET_INCLUDE_DIRS}

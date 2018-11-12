@@ -15,7 +15,8 @@ namespace SDL
 		#include <SDL_render.h>
 	}
 
-	enum class BlendMode : std::underlying_type<C::SDL_BlendMode>::type
+	enum class BlendMode
+		: std::underlying_type<C::SDL_BlendMode>::type
 	{
 		NONE	= C::SDL_BLENDMODE_NONE,
 		BLEND	= C::SDL_BLENDMODE_BLEND,
@@ -36,7 +37,8 @@ namespace SDL
 	public:
 		PTR_AUTOCAST
 
-		enum class Flags : std::underlying_type<C::SDL_RendererFlags>::type
+		enum class Flags
+			: std::underlying_type<C::SDL_RendererFlags>::type
 		{
 			NONE			= 0,
 			SOFTWARE		= C::SDL_RENDERER_SOFTWARE,
@@ -47,12 +49,12 @@ namespace SDL
 
 		__alwaysinline
 		Renderer() noexcept
-		:	ptr()
+			: ptr()
 		{}
 
 		__alwaysinline
 		Renderer( Window & window, int index, Flags flags ) noexcept
-		:	ptr( C::SDL_CreateRenderer( window, index, base_cast( flags ) ), deleter )
+			: ptr( C::SDL_CreateRenderer( window, index, base_cast( flags ) ), deleter )
 		{}
 
 		__alwaysinline
@@ -60,42 +62,44 @@ namespace SDL
 		{}
 
 		__alwaysinline
-		int SetDrawColor( Uint8 r, Uint8 g, Uint8 b ) noexcept
+		int
+		SetDrawColor( Uint8 r, Uint8 g, Uint8 b ) noexcept
 		{
 			return C::SDL_SetRenderDrawColor( *this, r, g, b, 255 );
 		}
 
 		__alwaysinline
-		int SetDrawColor( Uint8 r, Uint8 g, Uint8 b, Uint8 a ) noexcept
+		int
+		SetDrawColor( Uint8 r, Uint8 g, Uint8 b, Uint8 a ) noexcept
 		{
 			return C::SDL_SetRenderDrawColor( *this, r, g, b, a );
 		}
 
 		__alwaysinline
-		int SetDrawColor( const SDL::Color & color ) noexcept
+		int
+		SetDrawColor( const SDL::Color & color ) noexcept
 		{
 			return C::SDL_SetRenderDrawColor( *this, color.r, color.g, color.b, color.a );
 		}
 
 		__alwaysinline
-		int SetDrawBlendMode( const BlendMode blendMode ) noexcept
+		int
+		SetDrawBlendMode( const BlendMode blendMode ) noexcept
 		{
 			return C::SDL_SetRenderDrawBlendMode(
 				*this,
 				static_cast<C::SDL_BlendMode>( blendMode ) );
 		}
 
-		__alwaysinline
 		int Copy( Texture & texture ) noexcept;
 
-		__alwaysinline
 		int Copy( Texture & texture, const Rect & dstrect ) noexcept;
 
-		__alwaysinline
 		int Copy( Texture & texture, const Rect & srcrect, const Rect & dstrect ) noexcept;
 
 		__alwaysinline
-		int Clear() noexcept
+		int
+		Clear() noexcept
 		{
 			return C::SDL_RenderClear( *this );
 		}
@@ -110,41 +114,47 @@ namespace SDL
 		* @return 0 on success, negative error code on failure
 		*/
 		__alwaysinline
-		int ClearColor( Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255 ) noexcept
+		int
+		ClearColor( Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255 ) noexcept
 		{
 			C::SDL_SetRenderDrawColor( *this, r, g, b, a );
 			return C::SDL_RenderClear( *this );
 		}
 
 		__alwaysinline
-		void Present() noexcept
+		void
+		Present() noexcept
 		{
 			C::SDL_RenderPresent( *this );
 		}
 
 		// Works only when using SDLs OpenGL
 		__alwaysinline
-		int DrawPoints( const Point * points, const int count ) noexcept
+		int
+		DrawPoints( const Point * points, const int count ) noexcept
 		{
 			return C::SDL_RenderDrawPoints( *this, points, count );
 		}
 
 		// Works only when using SDLs OpenGL
 		__alwaysinline
-		int DrawLines( const Point points[], const int count ) noexcept
+		int
+		DrawLines( const Point points[], const int count ) noexcept
 		{
 			return C::SDL_RenderDrawLines( *this, points, count );
 		}
 
 		// Works only when using SDLs OpenGL
 		__alwaysinline
-		void DrawRect( const Rect & rect ) noexcept
+		void
+		DrawRect( const Rect & rect ) noexcept
 		{
 			C::SDL_RenderDrawRect( *this, &rect );
 		}
 
 		__alwaysinline
-		void FillRect( const Rect & rect ) noexcept
+		void
+		FillRect( const Rect & rect ) noexcept
 		{
 			C::SDL_RenderFillRect( *this, &rect );
 		}
@@ -222,19 +232,22 @@ namespace SDL
 	};
 
 	__alwaysinline
-	int Renderer::Copy( Texture & texture ) noexcept
+	int
+	Renderer::Copy( Texture & texture ) noexcept
 	{
 		return C::SDL_RenderCopy( *this, texture, nullptr, nullptr);
 	}
 
 	__alwaysinline
-	int Renderer::Copy( Texture & texture, const Rect & dstrect ) noexcept
+	int
+	Renderer::Copy( Texture & texture, const Rect & dstrect ) noexcept
 	{
 		return C::SDL_RenderCopy( *this, texture, nullptr, &dstrect );
 	}
 
 	__alwaysinline
-	int Renderer::Copy( Texture & texture, const Rect & srcrect, const Rect & dstrect ) noexcept
+	int
+	Renderer::Copy( Texture & texture, const Rect & srcrect, const Rect & dstrect ) noexcept
 	{
 		return C::SDL_RenderCopy( *this, texture, &srcrect, &dstrect );
 	}
@@ -243,14 +256,14 @@ namespace SDL
 
 	__alwaysinline
 	Texture::Texture( Renderer & rend, const char * file )
-	:	rend( rend )
+		: rend( rend )
 	{
 		auto srf = C::SDL_LoadBMP_RW( C::SDL_RWFromFile( file, "rb" ), 1 );
 		if( !srf )
 			THROW_SDL_ERROR( -1 );
 
 		this->surf = srf;
-		this->ptr	= std::shared_ptr<ptr_type>(
+		this->ptr  = std::shared_ptr<ptr_type>(
 			C::SDL_CreateTextureFromSurface( this->rend, this->surf ),
 			deleter );
 
@@ -261,7 +274,7 @@ namespace SDL
 
 	__alwaysinline
 	Texture::Texture( Renderer & rend, Surface & surf ) noexcept
-	:	rend( rend )
+		: rend( rend )
 	{
 		this->surf	= surf;
 
@@ -277,7 +290,7 @@ namespace SDL
 	// no surf, maybe not good
 	__alwaysinline
 	Texture::Texture( Renderer & rend, C::SDL_Texture * tex ) noexcept
-	:	rend( rend )
+		: rend( rend )
 	{
 		this->ptr	= std::shared_ptr<ptr_type>( tex, deleter );
 		Uint32 fmt;
@@ -287,14 +300,16 @@ namespace SDL
 
 	// Draws the texture at the given position with its normal size
 	__alwaysinline
-	void Texture::Draw( const Point & pos ) noexcept
+	void
+	Texture::Draw( const Point & pos ) noexcept
 	{
 		this->rend.Copy( *this, Rect( pos.x, pos.y, this->w, this->h ) );
 	}
 
 	// Draws the texture at the given position with its normal size, stretching the image to fit dst
 	__alwaysinline
-	void Texture::Draw( const Rect & dstrect ) noexcept
+	void
+	Texture::Draw( const Rect & dstrect ) noexcept
 	{
 		this->rend.Copy(
 			*this,
@@ -303,7 +318,8 @@ namespace SDL
 
 	// Draws the texture at the given position with its normal size, given a subset
 	__alwaysinline
-	void Texture::Draw( const Point & pos, const Rect & srcrect ) noexcept
+	void
+	Texture::Draw( const Point & pos, const Rect & srcrect ) noexcept
 	{
 		this->rend.Copy(
 			*this,
@@ -313,19 +329,21 @@ namespace SDL
 
 	// Draws the texture at the given position with a scaled size
 	__alwaysinline
-	void Texture::Draw( const Point & pos, const float scale ) noexcept
+	void
+	Texture::Draw( const Point & pos, const float scale ) noexcept
 	{
 		this->rend.Copy(
 			*this,
 			Rect(	pos.x,
 					pos.y,
-					(const int) (this->w*scale),
-					(const int) (this->h*scale) ) );
+					(int) (this->w*scale),
+					(int) (this->h*scale) ) );
 	}
 
 	// Draws the selected sprite at the given position with its normal size
 	__alwaysinline
-	void Texture::DrawSprite( const Point & pos, const Point & count, const Point & index ) noexcept
+	void
+	Texture::DrawSprite( const Point & pos, const Point & count, const Point & index ) noexcept
 	{
 		const int w_rel = this->w / count.x;
 		const int h_rel = this->h / count.y;
@@ -340,7 +358,8 @@ namespace SDL
 
 	// Draws the selected sprite at the given position with a scaled size
 	__alwaysinline
-	void Texture::DrawSprite( const Point & pos, const Point & count, const Point & index, const float scale ) noexcept
+	void
+	Texture::DrawSprite( const Point & pos, const Point & count, const Point & index, const float scale ) noexcept
 	{
 		const int w_rel = this->w / count.x;
 		const int h_rel = this->h / count.y;
@@ -349,42 +368,48 @@ namespace SDL
 		this->rend.Copy(
 			*this,
 			source,
-			Rect( pos.x, pos.y, (const int) (w_rel*scale), (const int) (h_rel*scale) )
+			Rect(pos.x, pos.y, (int) (w_rel*scale), (int) (h_rel*scale) )
 		);
 	}
 
 	__alwaysinline
-	int Texture::SetColorMod( const Uint8 r, const Uint8 g, const Uint8 b )
+	int
+	Texture::SetColorMod( const Uint8 r, const Uint8 g, const Uint8 b )
 	{
 		return C::SDL_SetTextureColorMod( *this, r, g, b );
 	}
 	
 	__alwaysinline
-	int Texture::SetColorMod( const Color & color )
+	int
+	Texture::SetColorMod( const Color & color )
 	{
 		return C::SDL_SetTextureColorMod( *this, color.r, color.g, color.b );
 	}
 	
 	__alwaysinline
-	int Texture::GetColorMod( Uint8 & r, Uint8 & g, Uint8 & b )
+	int
+	Texture::GetColorMod( Uint8 & r, Uint8 & g, Uint8 & b )
 	{
 		return C::SDL_GetTextureColorMod( *this, &r, &g, &b );
 	}
 
 	__alwaysinline
-	int Texture::GetColorMod( Color & color )
+	int
+	Texture::GetColorMod( Color & color )
 	{
 		return C::SDL_GetTextureColorMod( *this, &color.r, &color.g, &color.b );
 	}
 
 	__alwaysinline
-	int Texture::SetAlphaMod( const Uint8 alpha )
+	int
+	Texture::SetAlphaMod( const Uint8 alpha )
 	{
 		return C::SDL_SetTextureAlphaMod( *this, alpha );
 	}
 
 	__alwaysinline
-	int Texture::GetAlphaMod( Uint8 & alpha )
+	int
+	Texture::GetAlphaMod( Uint8 & alpha )
 	{
 		return C::SDL_GetTextureAlphaMod( *this, &alpha );
 	}

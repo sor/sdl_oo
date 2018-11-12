@@ -12,7 +12,8 @@ namespace SDL
 		#include <SDL_keycode.h>
 	}
 
-	enum class Keymod : std::underlying_type<C::SDL_Keymod>::type
+	enum class Keymod
+		: std::underlying_type<C::SDL_Keymod>::type
 	{
 		NONE		= C::KMOD_NONE,
 

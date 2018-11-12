@@ -12,6 +12,8 @@ namespace SDL
 		#include <SDL_rect.h>
 	}
 
+	struct Rect;
+
 	struct Point
 		: public C::SDL_Point
 	{
@@ -26,12 +28,9 @@ namespace SDL
 			this->y = y;
 		}
 
-		/*__alwaysinline
+		__alwaysinline
 		bool
-		In(const Rect & rect) const
-		{
-			return C::SDL_PointInRect(this, static_cast<const C::SDL_Rect*>(&rect));
-		}*/
+		InRect(const Rect & rect) const;
 
 		__alwaysinline
 		Point
@@ -159,9 +158,16 @@ namespace SDL
 
 		__alwaysinline
 		bool
-		Contains(const Point & pos) const
+		ContainsPoint(const Point & pos) const
 		{
-			return C::SDL_PointInRect(&pos, this) == Bool::TRUE;
+			return pos.InRect(*this);
+		}
+
+		__alwaysinline
+		bool
+		CollidesWith(const Rect & pos) const
+		{
+			return C::SDL_HasIntersection(this, &pos) == C::SDL_bool::SDL_TRUE;
 		}
 
 		__alwaysinline
@@ -180,6 +186,14 @@ namespace SDL
 			return *this;
 		}
 	};
+
+	__alwaysinline
+	bool
+	Point::InRect(const Rect & rect) const
+	{
+		return C::SDL_PointInRect(this, &rect) == C::SDL_bool::SDL_TRUE;
+		//return C::SDL_PointInRect(this, static_cast<const C::SDL_Rect*>(&rect));
+	}
 }
 
 #endif

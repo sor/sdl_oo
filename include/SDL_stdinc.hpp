@@ -99,12 +99,6 @@ namespace SDL
 	 */
 	typedef C::Uint64 Uint64;
 
-	enum Bool
-	{
-		FALSE	= C::SDL_FALSE,
-		TRUE	= C::SDL_TRUE
-	};
-
 	#define foreach( iter, collection )\
 		for(auto iter = begin( collection );\
 			iter     != end( collection );\
@@ -137,15 +131,15 @@ namespace SDL
 	// Autocast this to the SDL_* Pointer and to bool
 	#define PTR_AUTOCAST\
 		__alwaysinline\
-		operator bool() noexcept\
+		operator bool() const noexcept\
 		{\
 			return static_cast<bool>( this->ptr );\
 		}\
-		__alwaysinline\
-		operator /*const*/ bool() const noexcept\
+		/*__alwaysinline\
+		operator / *const* / bool() const noexcept\
 		{\
 			return static_cast<const bool>( this->ptr );\
-		}\
+		}*/\
 		__alwaysinline\
 		operator ptr_type*() noexcept\
 		{\

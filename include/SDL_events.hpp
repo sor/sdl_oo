@@ -33,7 +33,7 @@ namespace SDL
 
 	public:
 		enum class Type
-			: std::underlying_type<C::SDL_EventType>::type
+			: std::underlying_type<C::SDL_EventType>::type // this base should be uint32
 		{
 			FIRSTEVENT      = C::SDL_FIRSTEVENT,        /**< Unused (do not remove) */
 			QUIT            = C::SDL_QUIT,              /**< User-requested quit */
@@ -114,7 +114,6 @@ namespace SDL
 		{
 			self = evt;
 		}
-
 
 		// INSTANCE
 		__alwaysinline
