@@ -95,7 +95,7 @@ namespace SDL
 				static_cast<int>( y / scale ) );
 		}
 
-		constexpr __alwaysinline
+		/* TODO: GCC5.4 constexpr*/ __alwaysinline
 		bool
 		operator == ( const Point & other ) const
 		{
@@ -103,7 +103,7 @@ namespace SDL
 				&& y == other.y;
 		}
 		
-		constexpr __alwaysinline
+		/* TODO: GCC5.4 constexpr*/ __alwaysinline
 		bool
 		operator != ( const Point & other ) const
 		{
