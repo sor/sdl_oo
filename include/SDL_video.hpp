@@ -53,7 +53,7 @@ namespace SDL
 			CENTERED		= SDL_WINDOWPOS_CENTERED
 		};
 
-		__alwaysinline
+		constexpr __alwaysinline
 		Window() noexcept
 			: ptr()
 		{}
@@ -66,6 +66,20 @@ namespace SDL
 		__alwaysinline
 		~Window() noexcept
 		{}
+
+		__alwaysinline
+		void
+		SetTitle( const std::string & title ) noexcept
+		{
+			SetTitle( title.c_str() );
+		}
+
+		__alwaysinline
+		void
+		SetTitle( const char * title ) noexcept
+		{
+			C::SDL_SetWindowTitle( *this, title );
+		}
 	};
 
 	ENUM_CLASS_BITWISE( Window::Flags )
