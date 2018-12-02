@@ -3,8 +3,10 @@
 #define _SDL_KEYBOARD_HPP
 
 #include "SDL_stdinc.hpp"
+
 #include "SDL_error.hpp"
 #include "SDL_keycode.hpp"
+#include "SDL_scancode.hpp"
 #include "SDL_video.hpp"
 
 namespace SDL
@@ -22,34 +24,36 @@ namespace SDL
 		__alwaysinline
 		Keysym()
 		{
-			SDL::zerop( &self );
+			// TODO: zero instead of zerop
+			zerop( &self );
 		}
 
-		__alwaysinline
+		__alwaysinline /* implicit */
 		Keysym( const C::SDL_Keysym & other )
 			: self( other )
 		{}
 
+		// TODO: maybe return a reference to the original data?
 		__alwaysinline
 		Scancode
-		scancode()
+		scancode() const
 		{
-			return Scancode(self.scancode);
+			return Scancode( self.scancode );
 			return static_cast<Scancode::Code>( self.scancode );
 		}
 
 		__alwaysinline
 		Keymod
-		mod()
+		mod() const
 		{
 			return static_cast<Keymod>( self.mod );
 		}
 
 		__alwaysinline
-		C::SDL_Keycode
-		sym()
+		Keycode
+		sym() const
 		{
-			return static_cast<C::SDL_Keycode>( self.sym );
+			return static_cast<Keycode>( self.sym );
 		}
 
 		// FIXME: should not be needed in the end

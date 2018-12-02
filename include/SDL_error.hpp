@@ -4,8 +4,6 @@
 
 #include "SDL_stdinc.hpp"
 
-#include <string>
-
 #define THROW_SDL_ERROR( code )\
 	throw SDL::Exception( code, SDL::Error(), __FILE__, __LINE__ )
 
@@ -36,12 +34,12 @@ namespace SDL
 	public:
 		__alwaysinline
 		Exception( const int code, const char * text ) noexcept
-		:	code( code ), text( text )
+			: code( code ), text( text )
 		{}
 
 		__alwaysinline
 		Exception( const int code, const char * text, const char * file, int line ) noexcept
-		:	code( code ), text( text ), file( file ), line( line )
+			: code( code ), text( text ), file( file ), line( line )
 		{}
 
 		/*
@@ -59,7 +57,14 @@ namespace SDL
 		}
 
 		__alwaysinline
-		std::string
+		std::string &
+		Text() noexcept
+		{
+			return text;
+		}
+
+		__alwaysinline
+		const std::string &
 		Text() const noexcept
 		{
 			return text;

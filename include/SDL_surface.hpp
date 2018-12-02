@@ -3,9 +3,8 @@
 #define _SDL_SURFACE_HPP
 
 #include "SDL_stdinc.hpp"
-#include "SDL_rect.hpp"
 
-#include <memory>
+#include "SDL_rect.hpp"
 
 namespace SDL
 {
@@ -16,7 +15,7 @@ namespace SDL
 
 	class Surface
 	{
-		typedef C::SDL_Surface		ptr_type;
+		using ptr_type = C::SDL_Surface;
 		std::shared_ptr<ptr_type>	ptr;
 
 		PTR_DELETER( C::SDL_FreeSurface )
@@ -28,16 +27,15 @@ namespace SDL
 		__alwaysinline
 		Surface() noexcept
 		{}
-		
+
 		// Self deleting
-		__alwaysinline
-		/* implicit */
+		/* implicit */ __alwaysinline
 		Surface( C::SDL_Surface * surf ) noexcept
 		:	ptr( surf, deleter )
 		{}
 
 		// FIXME: should copy. not reference
-		__alwaysinline
+		/* implicit */ __alwaysinline
 		Surface( const Surface & other ) noexcept
 		:	ptr( other.ptr )
 		{}
@@ -52,10 +50,9 @@ namespace SDL
 		}
 		*/
 
-		__alwaysinline
-		explicit Surface( char * file ) noexcept
-		//:	ptr( C::SDL_LoadBMP_RW( C::SDL_RWFromFile( file, "rb" ), 1 ),
-		//		deleter )
+		explicit __alwaysinline
+		Surface( const char * file ) noexcept
+			// why not? : ptr( C::SDL_LoadBMP_RW( C::SDL_RWFromFile( file, "rb" ), 1 ), deleter )
 		{
 			ptr = std::shared_ptr<ptr_type>(
 				C::SDL_LoadBMP_RW( C::SDL_RWFromFile( file, "rb" ), 1 ),
@@ -92,8 +89,7 @@ namespace SDL
 		}
 		*/
 
-		__alwaysinline
-		static
+		static __alwaysinline
 		Surface
 		CreateRGB( const int width, const int height, const int depth )
 		{
@@ -119,13 +115,15 @@ namespace SDL
 		}
 
 		__alwaysinline
-		int SaveBMP( char * file ) noexcept
+		int
+		SaveBMP( char * file ) noexcept
 		{
 			return C::SDL_SaveBMP_RW( *this, C::SDL_RWFromFile( file, "wb" ), 1 );
 		}
 
 		__alwaysinline
-		int Blit( const Rect * srcrect, Surface & dst, Rect * dstrect ) noexcept
+		int
+		Blit( const Rect * srcrect, Surface & dst, Rect * dstrect ) noexcept
 		{
 			return SDL_BlitSurface(
 				*this,
@@ -135,56 +133,65 @@ namespace SDL
 		}
 
 		__alwaysinline
-		int pitch() const noexcept
+		int
+		pitch() const noexcept
 		{
 			return ptr->pitch;
 		}
 
 		__alwaysinline
-		int w() const noexcept
+		int
+		w() const noexcept
 		{
 			return ptr->w;
 		}
 
 		__alwaysinline
-		int h() const noexcept
+		int
+		h() const noexcept
 		{
 			return ptr->h;
 		}
 
 		__alwaysinline
-		bool MustLock() const noexcept
+		bool
+		MustLock() const noexcept
 		{
 			return SDL_MUSTLOCK( ptr.get() );
 		}
 
 		__alwaysinline
-		int Lock() noexcept
+		int
+		Lock() noexcept
 		{
-			return SDL::C::SDL_LockSurface( ptr.get() );
+			return C::SDL_LockSurface( ptr.get() );
 		}
 		
 		__alwaysinline
-		void Unlock() noexcept
+		void
+		Unlock() noexcept
 		{
-			SDL::C::SDL_UnlockSurface( ptr.get() );
+			C::SDL_UnlockSurface( ptr.get() );
 		}
 
 		template <typename T>
 		__alwaysinline
-		T * pixels() const noexcept
+		T *
+		pixels() const noexcept
 		{
 			return static_cast<T *>( ptr->pixels );
 		}
 
 		__alwaysinline
-		PixelFormat format() const noexcept
+		PixelFormat
+		format() const noexcept
 		{
 			return ptr->format;
 		}
 
 		__alwaysinline
-		int SetRLE( int flag ) noexcept
+		int
+		SetRLE( int flag ) noexcept
 		{
 			return C::SDL_SetSurfaceRLE( *this, flag );
 		}

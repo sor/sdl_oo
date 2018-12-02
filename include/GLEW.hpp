@@ -78,7 +78,7 @@ namespace GL
 			std::getline( ifs, shader_src, '\0' );	// HACK: might not be 100% correct
 
 			const char * vss = shader_src.c_str();
-			glShaderSource( _id, 1, &vss, NULL );
+			glShaderSource( _id, 1, &vss, nullptr );
 
 			return *this;
 		}
@@ -111,7 +111,7 @@ namespace GL
 			const GLint log_length = GetIV( GL_INFO_LOG_LENGTH );
 			std::string ret;
 			ret.resize( log_length + 1 );
-			GL::glGetShaderInfoLog( _id, log_length, NULL, &ret[0] );
+			GL::glGetShaderInfoLog( _id, log_length, nullptr, &ret[0] );
 			return ret;
 		}
 	};
@@ -299,7 +299,7 @@ namespace GL
 			const GLint log_length = GetIV( GL_INFO_LOG_LENGTH );
 			std::string ret;
 			ret.resize( log_length + 1 );
-			GL::glGetProgramInfoLog( _id, log_length, NULL, &ret[0] );
+			GL::glGetProgramInfoLog( _id, log_length, nullptr, &ret[0] );
 			return ret;
 		}
 	};
@@ -364,7 +364,7 @@ namespace GL
 														GL_DYNAMIC_DRAW, GL_DYNAMIC_READ, GL_DYNAMIC_COPY
 		GL_BUFFER_ACCESS		enum	GL_READ_WRITE	GL_READ_ONLY, GL_WRITE_ONLY, GL_READ_WRITE
 		GL_BUFFER_MAPPED		boolean	FALSE			TRUE, FALSE
-		GL_BUFFER_MAP_POINTER	void*	NULL			address
+		GL_BUFFER_MAP_POINTER	void*	nullptr			address
 		*/
 
 		// +++ STATIC +++
@@ -437,8 +437,8 @@ namespace GL
 		}
 	};
 
-	typedef Buffer<BufferTarget::ARRAY>			ArrayBuffer;
-	typedef Buffer<BufferTarget::ELEMENT_ARRAY>	IndexBuffer;
+	using ArrayBuffer = Buffer<BufferTarget::ARRAY>;
+	using IndexBuffer = Buffer<BufferTarget::ELEMENT_ARRAY>;
 }
 
 namespace GLEW

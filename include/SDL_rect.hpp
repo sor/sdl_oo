@@ -3,6 +3,7 @@
 #define _SDL_RECT_HPP
 
 #include "SDL_stdinc.hpp"
+
 #include "SDL_pixels.hpp"
 
 namespace SDL
@@ -28,20 +29,18 @@ namespace SDL
 			this->y = y;
 		}
 
-		__alwaysinline
-		bool
-		InRect(const Rect & rect) const;
+		bool InRect( const Rect & rect ) const;
 
 		__alwaysinline
 		Point
-		operator+( const Point & other ) const
+		operator + ( const Point & other ) const
 		{
 			return Point( x + other.x, y + other.y );
 		}
 
 		__alwaysinline
 		Point &
-		operator+=( const Point & other )
+		operator += ( const Point & other )
 		{
 			x += other.x;
 			y += other.y;
@@ -50,14 +49,14 @@ namespace SDL
 
 		__alwaysinline
 		Point
-		operator-( const Point & other ) const
+		operator - ( const Point & other ) const
 		{
 			return Point( x - other.x, y - other.y );
 		}
 
 		__alwaysinline
 		Point &
-		operator-=( const Point & other )
+		operator -= ( const Point & other )
 		{
 			x -= other.x;
 			y -= other.y;
@@ -66,14 +65,14 @@ namespace SDL
 		
 		__alwaysinline
 		Point
-		operator*( const int scale ) const
+		operator * ( const int scale ) const
 		{
 			return Point( x * scale, y * scale );
 		}
 
 		__alwaysinline
 		Point
-		operator*( const float scale ) const
+		operator * ( const float scale ) const
 		{
 			return Point(
 				static_cast<int>( x * scale ),
@@ -82,31 +81,31 @@ namespace SDL
 
 		__alwaysinline
 		Point
-		operator/( const int scale ) const
+		operator / ( const int scale ) const
 		{
 			return Point( x / scale, y / scale );
 		}
 
 		__alwaysinline
 		Point
-		operator/( const float scale ) const
+		operator / ( const float scale ) const
 		{
 			return Point(
 				static_cast<int>( x / scale ),
 				static_cast<int>( y / scale ) );
 		}
 
-		__alwaysinline
+		constexpr __alwaysinline
 		bool
-		operator==( const Point & other ) const
+		operator == ( const Point & other ) const
 		{
 			return x == other.x
 				&& y == other.y;
 		}
 		
-		__alwaysinline
+		constexpr __alwaysinline
 		bool
-		operator!=( const Point & other ) const
+		operator != ( const Point & other ) const
 		{
 			return x != other.x
 				|| y != other.y;
@@ -129,8 +128,8 @@ namespace SDL
 		Rect() noexcept
 		{}
 
-		__alwaysinline
-		explicit Rect( const int wh ) noexcept
+		explicit __alwaysinline
+		Rect( const int wh ) noexcept
 		{
 			this->x = 0;
 			this->y = 0;
@@ -158,28 +157,28 @@ namespace SDL
 
 		__alwaysinline
 		bool
-		ContainsPoint(const Point & pos) const
+		ContainsPoint( const Point & pos ) const
 		{
-			return pos.InRect(*this);
+			return pos.InRect( *this );
 		}
 
 		__alwaysinline
 		bool
-		CollidesWith(const Rect & pos) const
+		CollidesWith( const Rect & pos ) const
 		{
-			return C::SDL_HasIntersection(this, &pos) == C::SDL_bool::SDL_TRUE;
+			return C::SDL_HasIntersection( this, &pos ) == C::SDL_TRUE;
 		}
 
 		__alwaysinline
 		Rect
-		operator+(const Point & pos) const
+		operator + ( const Point & pos ) const
 		{
-			return Rect(x + pos.x, y + pos.y, w, h);
+			return Rect( x + pos.x, y + pos.y, w, h );
 		}
 
 		__alwaysinline
 		Rect&
-		operator+=(const Point & pos)
+		operator += ( const Point & pos )
 		{
 			x += pos.x;
 			y += pos.y;
@@ -189,10 +188,9 @@ namespace SDL
 
 	__alwaysinline
 	bool
-	Point::InRect(const Rect & rect) const
+	Point::InRect( const Rect & rect ) const
 	{
-		return C::SDL_PointInRect(this, &rect) == C::SDL_bool::SDL_TRUE;
-		//return C::SDL_PointInRect(this, static_cast<const C::SDL_Rect*>(&rect));
+		return C::SDL_PointInRect( this, &rect ) == C::SDL_TRUE;
 	}
 }
 

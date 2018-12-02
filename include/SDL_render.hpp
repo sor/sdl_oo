@@ -3,6 +3,8 @@
 #define _SDL_RENDER_HPP
 
 #include "SDL_stdinc.hpp"
+
+#include "SDL_error.hpp"
 #include "SDL_rect.hpp"
 #include "SDL_video.hpp"
 
@@ -29,7 +31,7 @@ namespace SDL
 
 	class Renderer
 	{
-		typedef C::SDL_Renderer		ptr_type;
+		using ptr_type = C::SDL_Renderer;
 		std::shared_ptr<ptr_type>	ptr;
 
 		PTR_DELETER( C::SDL_DestroyRenderer )
@@ -77,7 +79,7 @@ namespace SDL
 
 		__alwaysinline
 		int
-		SetDrawColor( const SDL::Color & color ) noexcept
+		SetDrawColor( const Color & color ) noexcept
 		{
 			return C::SDL_SetRenderDrawColor( *this, color.r, color.g, color.b, color.a );
 		}
@@ -92,9 +94,7 @@ namespace SDL
 		}
 
 		int Copy( Texture & texture ) noexcept;
-
 		int Copy( Texture & texture, const Rect & dstrect ) noexcept;
-
 		int Copy( Texture & texture, const Rect & srcrect, const Rect & dstrect ) noexcept;
 
 		__alwaysinline
@@ -164,7 +164,7 @@ namespace SDL
 
 	class Texture
 	{
-		typedef C::SDL_Texture		ptr_type;
+		using ptr_type = C::SDL_Texture;
 		std::shared_ptr<ptr_type>	ptr;
 
 		PTR_DELETER( C::SDL_DestroyTexture )
@@ -206,7 +206,7 @@ namespace SDL
 		// Draws the texture at the given position with a scaled size
 		void Draw( const Point & pos, const float scale ) noexcept;
 
-		// Draws the selected sprite at the given position  with its normal size
+		// Draws the selected sprite at the given position with its normal size
 		void DrawSprite( const Point & pos, const Point & count, const Point & index ) noexcept;
 
 		// Draws the selected sprite at the given position with a scaled size

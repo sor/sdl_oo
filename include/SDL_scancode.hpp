@@ -114,40 +114,40 @@ namespace SDL
 		Code code;
 
 	public:
-		__alwaysinline constexpr /* implicit */
+		/* implicit */ constexpr __alwaysinline
 		Scancode( const Code code )
 			: code( code )
 		{}
 
-		__alwaysinline constexpr /* implicit */
+		/* implicit */ constexpr __alwaysinline
 		Scancode( const C::SDL_Scancode code )
 			: code( static_cast<Code>( code ) )
 		{}
 
-		__alwaysinline
+		constexpr __alwaysinline
 		bool
-		operator==( const Scancode & other ) const
+		operator == ( const Scancode & other ) const
 		{
 			return code == other.code;
 		}
 
-		__alwaysinline
+		constexpr __alwaysinline
 		bool
-		operator!=( const Scancode & other ) const
+		operator != ( const Scancode & other ) const
 		{
 			return code != other.code;
 		}
 
-		__alwaysinline
+		constexpr __alwaysinline
 		bool
-		operator==( const Code & other_code ) const
+		operator == ( const Code & other_code ) const
 		{
 			return code == other_code;
 		}
 
-		__alwaysinline
+		constexpr __alwaysinline
 		bool
-		operator!=( const Code & other_code ) const
+		operator != ( const Code & other_code ) const
 		{
 			return code != other_code;
 		}

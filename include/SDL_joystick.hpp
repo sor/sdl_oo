@@ -15,7 +15,7 @@ namespace SDL
 
 	class Joystick
 	{
-		typedef C::SDL_Joystick		ptr_type;
+		using ptr_type = C::SDL_Joystick;
 		std::shared_ptr<ptr_type>	ptr;
 
 		PTR_DELETER( C::SDL_JoystickClose )
@@ -30,8 +30,9 @@ namespace SDL
 			int maxband_x;
 			int maxband_y;
 
-			int raw_x;
-			int raw_y;
+			int raw_x = 0;
+			int raw_y = 0;
+
 			float x;		// values in [-1,1]
 			float y;		// values in [-1,1]
 			float norm_x;	// fully pressed bottom and right results in norm_x = sqrt(0.5)
@@ -46,15 +47,14 @@ namespace SDL
 			:	deadband_x( deadband_x ),
 				deadband_y( deadband_y ),
 				maxband_x( maxband_x ),
-				maxband_y( maxband_y ),
-				raw_x( 0 ),
-				raw_y( 0 )
+				maxband_y( maxband_y )
 			{
 				calculate();
 			}
 
 			__alwaysinline
-			void calculate()
+			void
+			calculate()
 			{
 				// x values
 				if( raw_x > deadband_x )		// more than dead
@@ -135,24 +135,24 @@ namespace SDL
 			}
 		};
 
-		// STATIC
-		__alwaysinline
-		static int Num()
+		static __alwaysinline
+		int
+		Num()
 		{
 			return C::SDL_NumJoysticks();
 		}
 
-		__alwaysinline
+		constexpr __alwaysinline
 		Joystick() noexcept
+		{}
+
+		explicit __alwaysinline
+		Joystick( int device_index ) noexcept
+			: ptr( C::SDL_JoystickOpen( device_index ), deleter )
 		{}
 
 		__alwaysinline
 		~Joystick() noexcept
-		{}
-
-		__alwaysinline
-		Joystick( int device_index ) noexcept
-		:	ptr( C::SDL_JoystickOpen( device_index ), deleter )
 		{}
 	};
 }

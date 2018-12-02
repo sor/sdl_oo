@@ -3,16 +3,14 @@
 #define _SDL_EVENTS_HPP
 
 #include "SDL_stdinc.hpp"
+
 #include "SDL_keyboard.hpp"
 #include "SDL_joystick.hpp"
 
 /*
-#include "SDL_stdinc.h"
 #include "SDL_error.h"
 #include "SDL_video.h"
-#include "SDL_keyboard.h"
 #include "SDL_mouse.h"
-#include "SDL_joystick.h"
 #include "SDL_gamecontroller.h"
 #include "SDL_quit.h"
 #include "SDL_gesture.h"
@@ -28,7 +26,7 @@ namespace SDL
 
 	class Event
 	{
-		// this one is no ptr, its a union
+		// this one is no ptr, its a union, thats why we can't derive from it
 		C::SDL_Event self;
 
 	public:
@@ -98,19 +96,20 @@ namespace SDL
 		__alwaysinline
 		Event()
 		{
-			SDL::zerop( &self );
+			// TODO: zero instead of zerop
+			zerop( &self );
 			self.type = base_cast( Type::FIRSTEVENT );
 		}
 
-		__alwaysinline
+		/* implicit */ __alwaysinline
 		Event( const Type type )
 		{
-			SDL::zerop( &self );
+			zerop( &self );
 			self.type = base_cast( type );
 		}
 
-		__alwaysinline
-		Event( const C::SDL_Event& evt )
+		/* implicit */ __alwaysinline
+		Event( const C::SDL_Event & evt )
 		{
 			self = evt;
 		}
@@ -125,14 +124,14 @@ namespace SDL
 
 		// FIXME: is this portable? needs -fno-strict-aliasing to work :(
 		__alwaysinline
-		const Type&
+		const Type &
 		type() const noexcept
 		{
-			return reinterpret_cast<const Type&>( this->self.type );
+			return reinterpret_cast<const Type &>( this->self.type );
 		}
 
 		__alwaysinline
-		const C::SDL_KeyboardEvent&
+		const C::SDL_KeyboardEvent &
 		Keyboard() const noexcept
 		{
 			return this->self.key;
@@ -153,28 +152,28 @@ namespace SDL
 		*/
 
 		__alwaysinline
-		const C::SDL_MouseButtonEvent&
+		const C::SDL_MouseButtonEvent &
 		MouseButton() const noexcept
 		{
 			return this->self.button;
 		}
 
 		__alwaysinline
-		const C::SDL_MouseMotionEvent&
+		const C::SDL_MouseMotionEvent &
 		MouseMotion() const noexcept
 		{
 			return this->self.motion;
 		}
 
 		__alwaysinline
-		const C::SDL_JoyAxisEvent&
+		const C::SDL_JoyAxisEvent &
 		JoyAxis() const noexcept
 		{
 			return this->self.jaxis;
 		}
 
 		__alwaysinline
-		const C::SDL_JoyButtonEvent&
+		const C::SDL_JoyButtonEvent &
 		JoyButton() const noexcept
 		{
 			return this->self.jbutton;
@@ -182,13 +181,13 @@ namespace SDL
 
 		// AUTOCASTS
 		__alwaysinline
-		operator C::SDL_Event*() noexcept
+		operator C::SDL_Event * () noexcept
 		{
 			return &this->self;
 		}
 
 		__alwaysinline
-		operator const C::SDL_Event*() const noexcept
+		operator const C::SDL_Event * () const noexcept
 		{
 			return &this->self;
 		}
