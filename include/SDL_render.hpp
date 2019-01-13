@@ -169,7 +169,7 @@ namespace SDL
 
 		PTR_DELETER( C::SDL_DestroyTexture )
 
-		Surface		surf;
+		//Surface	surf;	// problem?
 		Renderer	rend;
 
 		PixelFormat::Type	format;
@@ -177,6 +177,9 @@ namespace SDL
 
 	public:
 		PTR_AUTOCAST
+
+		__alwaysinline int width()  const { return w; }
+		__alwaysinline int height() const { return h; }
 
 		__alwaysinline
 		Texture() noexcept
@@ -190,7 +193,7 @@ namespace SDL
 		Texture( Renderer & rend, Surface & surf ) noexcept;
 		//Texture( Renderer & rend, C::SDL_Surface * surf ) noexcept;
 		Texture( Renderer & rend, C::SDL_Texture * tex ) noexcept;
-		
+
 		//void destroy() noexcept;
 		//Texture & operator=( Texture && other ) noexcept;
 
@@ -253,18 +256,19 @@ namespace SDL
 	}
 
 	// TEX
-
+	// TODO: rework so that this uses IMG_Load, so that there is no longer need for IMG::LoadTexture
 	__alwaysinline
 	Texture::Texture( Renderer & rend, const char * file )
 		: rend( rend )
 	{
-		auto srf = C::SDL_LoadBMP_RW( C::SDL_RWFromFile( file, "rb" ), 1 );
-		if( !srf )
+		Surface surf( file );
+		//auto surf = C::SDL_LoadBMP_RW( C::SDL_RWFromFile( file, "rb" ), 1 );
+		if( !surf )
 			THROW_SDL_ERROR( -1 );
 
-		this->surf = srf;
+		//this->surf = surf;
 		this->ptr  = std::shared_ptr<ptr_type>(
-			C::SDL_CreateTextureFromSurface( this->rend, this->surf ),
+			C::SDL_CreateTextureFromSurface( this->rend, surf ),
 			deleter );
 
 		Uint32 fmt;
@@ -276,10 +280,10 @@ namespace SDL
 	Texture::Texture( Renderer & rend, Surface & surf ) noexcept
 		: rend( rend )
 	{
-		this->surf	= surf;
+		//this->surf	= surf;
 
 		this->ptr	= std::shared_ptr<ptr_type>(
-			C::SDL_CreateTextureFromSurface( this->rend, this->surf ),
+			C::SDL_CreateTextureFromSurface( this->rend, surf ),
 			deleter );
 
 		Uint32 fmt;
@@ -287,7 +291,7 @@ namespace SDL
 		format = static_cast<PixelFormat::Type>( fmt );
 	}
 
-	// no surf, maybe not good
+	// no surf, maybe not good, or maybe its good?
 	__alwaysinline
 	Texture::Texture( Renderer & rend, C::SDL_Texture * tex ) noexcept
 		: rend( rend )

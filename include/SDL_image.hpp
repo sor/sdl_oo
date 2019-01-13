@@ -40,13 +40,17 @@ namespace SDL
 
 		static __alwaysinline
 		Texture
-		LoadTexture( Renderer& renderer, const char* file )
+		LoadTexture( Renderer& renderer, const char* file, const Uint32 color_key = SDL_MAX_UINT32 )
 		{
-			auto img = C::IMG_LoadTexture( static_cast<C::SDL_Renderer*>(renderer), file );
-			if( !img )
+			Surface surface = C::IMG_Load( file );
+
+			if( !surface )
 				THROW_IMG_ERROR( -1 );
 
-			return Texture( renderer, img );
+			if( color_key != SDL_MAX_UINT32 )
+				C::SDL_SetColorKey( surface, C::SDL_TRUE, color_key );
+
+			return Texture( renderer, surface );
 		}
 
 		class Init

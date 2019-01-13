@@ -50,6 +50,7 @@ namespace SDL
 		}
 		*/
 
+		// TODO: rework so that this uses IMG_Load, so that there is no longer need for IMG::LoadTexture
 		explicit __alwaysinline
 		Surface( const char * file ) noexcept
 			// why not? : ptr( C::SDL_LoadBMP_RW( C::SDL_RWFromFile( file, "rb" ), 1 ), deleter )
