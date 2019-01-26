@@ -211,6 +211,7 @@ namespace SDL
 
 		// Draws the selected sprite at the given position with a scaled size
 		void DrawSprite( const Point & pos, const Point & count, const Point & index, const float scale ) noexcept;
+		void DrawSprite( const Point & pos, const Point & count, const Rect & indexAndAmount, const float scale ) noexcept;
 
 		// Use this method to set an additional color value multiplied into render copy operations
 		int SetColorMod( const Uint8 r, const Uint8 g, const Uint8 b );
@@ -369,6 +370,22 @@ namespace SDL
 			*this,
 			source,
 			Rect(pos.x, pos.y, (int) (w_rel*scale), (int) (h_rel*scale) )
+		);
+	}
+
+	// Draws the selected sprite at the given position with a scaled size
+	__alwaysinline
+	void
+	Texture::DrawSprite( const Point & pos, const Point & count, const Rect & indexAndAmount, const float scale ) noexcept
+	{
+		const int w_rel = this->w / count.x;
+		const int h_rel = this->h / count.y;
+		const Rect source( w_rel * indexAndAmount.x, h_rel * indexAndAmount.y, w_rel * indexAndAmount.w, h_rel * indexAndAmount.h );
+
+		this->rend.Copy(
+			*this,
+			source,
+			Rect(pos.x, pos.y, (int) (w_rel * indexAndAmount.w * scale), (int) (h_rel * indexAndAmount.h * scale) )
 		);
 	}
 
