@@ -3,7 +3,8 @@
 #define _SDL_KEYCODE_HPP
 
 #include "SDL_stdinc.hpp"
-#include "SDL_scancode.hpp"
+
+//#include "SDL_scancode.hpp"
 
 namespace SDL
 {
@@ -11,6 +12,8 @@ namespace SDL
 	{
 		#include <SDL_keycode.h>
 	}
+
+	using Keycode = C::SDL_Keycode;
 
 	enum class Keymod
 		: std::underlying_type<C::SDL_Keymod>::type

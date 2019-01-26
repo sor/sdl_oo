@@ -3,9 +3,10 @@
 #define _SDL_IMG_HPP
 
 #include "SDL_stdinc.hpp"
+
 #include "SDL_error.hpp"
-#include "SDL_surface.hpp"
 #include "SDL_render.hpp"
+#include "SDL_surface.hpp"
 
 #define THROW_IMG_ERROR( code )\
 	throw SDL::Exception( code, SDL::IMG::Error(), __FILE__, __LINE__ )
@@ -20,32 +21,36 @@ namespace SDL
 	namespace IMG
 	{
 		static __alwaysinline
-		const char*
+		const char *
 		Error() noexcept
 		{
 			return C::IMG_GetError();
 		}
 
 		static __alwaysinline
-		SDL::Surface
+		Surface
 		Load( const char* file )
 		{
 			auto srf = C::IMG_Load( file );
 			if( !srf )
 				THROW_IMG_ERROR( -1 );
 
-			return SDL::Surface( srf );
+			return Surface( srf );
 		}
 
 		static __alwaysinline
-		SDL::Texture
-		LoadTexture( SDL::Renderer& renderer, const char* file )
+		Texture
+		LoadTexture( Renderer& renderer, const char* file, const Uint32 color_key = SDL_MAX_UINT32 )
 		{
-			auto img = C::IMG_LoadTexture( static_cast<C::SDL_Renderer*>(renderer), file );
-			if( !img )
+			Surface surface = C::IMG_Load( file );
+
+			if( !surface )
 				THROW_IMG_ERROR( -1 );
 
-			return SDL::Texture( renderer, img );
+			if( color_key != SDL_MAX_UINT32 )
+				C::SDL_SetColorKey( surface, C::SDL_TRUE, color_key );
+
+			return Texture( renderer, surface );
 		}
 
 		class Init

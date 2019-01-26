@@ -2,11 +2,9 @@
 #ifndef _SDL_NET_HPP
 #define _SDL_NET_HPP
 
-#include <string>
-
 #include "SDL_stdinc.hpp"
+
 #include "SDL_error.hpp"
-#include "SDL_surface.hpp"
 
 #define THROW_NET_ERROR( code )\
 	throw SDL::Exception( code, SDL::NET::Error(), __FILE__, __LINE__ )
@@ -49,7 +47,8 @@ namespace SDL
 		struct IPaddress
 			: public C::IPaddress
 		{
-			enum InAddress : Uint32
+			enum InAddress
+				: Uint32
 			{
 				ANY       = INADDR_ANY,
 				NONE      = INADDR_NONE,
@@ -73,27 +72,25 @@ namespace SDL
 			ResolveIP()
 			{
 				const char * ret = C::SDLNet_ResolveIP( this );
-				if( ret == NULL )
+				if( ret == nullptr )
 					THROW_NET_ERROR( 0 );
 				return ret;
 			}
 			
 			/* server, resolving himself */
-			__alwaysinline
-			static
+			static __alwaysinline
 			IPaddress
 			ResolveHost( const Uint16 port )
 			{
 				IPaddress ret;
-				int code = C::SDLNet_ResolveHost( &ret, NULL, port );
+				int code = C::SDLNet_ResolveHost( &ret, nullptr, port );
 				if( code != 0 )
 					THROW_NET_ERROR( code );
 				return ret;
 			}
 
 			/* client, resolving the server */
-			__alwaysinline
-			static
+			static __alwaysinline
 			IPaddress
 			ResolveHost( const char * host, const Uint16 port )
 			{
@@ -107,7 +104,7 @@ namespace SDL
 
 		class TCPsocket
 		{
-			typedef C::_TCPsocket		ptr_type;
+			using ptr_type = C::_TCPsocket;
 			std::shared_ptr<ptr_type>	ptr;
 
 			PTR_DELETER( C::SDLNet_TCP_Close )
@@ -117,45 +114,47 @@ namespace SDL
 
 			__alwaysinline
 			TCPsocket() noexcept
-			:	ptr()
+				: ptr()
 			{}
 
-			__alwaysinline
-			~TCPsocket() noexcept
-			{}
-
-			__alwaysinline
-			/* implicit */
+			/* implicit */ __alwaysinline
 			TCPsocket( C::_TCPsocket * sock ) noexcept
-			:	ptr( sock, deleter )
+				: ptr( sock, deleter )
 			{}
 
-			__alwaysinline
-			TCPsocket( IPaddress & ip ) /*noexcept*/
-			:	ptr( C::SDLNet_TCP_Open( &ip ), deleter )
+			explicit __alwaysinline
+			TCPsocket( IPaddress & ip )
+				: ptr( C::SDLNet_TCP_Open( &ip ), deleter )
 			{
 				if( !*this )
 					THROW_NET_ERROR( -1 );
 			}
 
+			__alwaysinline
+			~TCPsocket() noexcept
+			{}
+
 			/* only for servers listening socket */
 			__alwaysinline
-			TCPsocket Accept()
+			TCPsocket
+			Accept()
 			{
 				auto ret = C::SDLNet_TCP_Accept( *this );
-				return (ret == NULL)
+				return (ret == nullptr)
 					? TCPsocket()
 					: TCPsocket(ret);
 			}
 
 			__alwaysinline
-			int Send( const void *data, const int len )
+			int
+			Send( const void * data, const int len )
 			{
 				return C::SDLNet_TCP_Send( *this, data, len );
 			}
 
 			__alwaysinline
-			int Recv( void *data, const int maxlen )
+			int
+			Recv( void * data, const int maxlen )
 			{
 				return C::SDLNet_TCP_Recv( *this, data, maxlen );
 			}

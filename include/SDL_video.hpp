@@ -3,6 +3,7 @@
 #define _SDL_VIDEO_HPP
 
 #include "SDL_stdinc.hpp"
+
 #include "SDL_rect.hpp"
 #include "SDL_surface.hpp"
 
@@ -15,7 +16,7 @@ namespace SDL
 
 	class Window
 	{
-		typedef C::SDL_Window		ptr_type;
+		using ptr_type = C::SDL_Window;
 		std::shared_ptr<ptr_type>	ptr;
 
 		PTR_DELETER( C::SDL_DestroyWindow )
@@ -23,7 +24,8 @@ namespace SDL
 	public:
 		PTR_AUTOCAST
 
-		enum class Flags : std::underlying_type<C::SDL_WindowFlags>::type
+		enum class Flags
+			: std::underlying_type<C::SDL_WindowFlags>::type
 		{
 			NONE               = 0,
 			FULLSCREEN         = C::SDL_WINDOW_FULLSCREEN,
@@ -42,7 +44,8 @@ namespace SDL
 			ALLOW_HIGHDPI      = C::SDL_WINDOW_ALLOW_HIGHDPI
 		};
 
-		enum class Pos : int // they are passed as int by the C functions
+		enum class Pos
+			: int // they are passed as int by the C functions
 		{
 			UNDEFINED_MASK	= SDL_WINDOWPOS_UNDEFINED_MASK,
 			UNDEFINED		= SDL_WINDOWPOS_UNDEFINED,
@@ -50,26 +53,41 @@ namespace SDL
 			CENTERED		= SDL_WINDOWPOS_CENTERED
 		};
 
-		__alwaysinline
+		constexpr __alwaysinline
 		Window() noexcept
-		:	ptr()
+			: ptr()
 		{}
 
 		__alwaysinline
 		Window(	const char *title, Pos x, Pos y, int w, int h, Flags flags ) noexcept
-		:	ptr( C::SDL_CreateWindow( title, static_cast<int>( x ), static_cast<int>( y ), w, h, static_cast<Uint32>( flags ) ), deleter )
+			: ptr( C::SDL_CreateWindow( title, static_cast<int>( x ), static_cast<int>( y ), w, h, static_cast<Uint32>( flags ) ), deleter )
 		{}
 
 		__alwaysinline
 		~Window() noexcept
 		{}
+
+		__alwaysinline
+		void
+		SetTitle( const std::string & title ) noexcept
+		{
+			SetTitle( title.c_str() );
+		}
+
+		__alwaysinline
+		void
+		SetTitle( const char * title ) noexcept
+		{
+			C::SDL_SetWindowTitle( *this, title );
+		}
 	};
 
 	ENUM_CLASS_BITWISE( Window::Flags )
 
 	namespace GL
 	{
-		enum class Attr : std::underlying_type<C::SDL_GLattr>::type
+		enum class Attr
+			: std::underlying_type<C::SDL_GLattr>::type
 		{
 			RED_SIZE					= C::SDL_GL_RED_SIZE,
 			GREEN_SIZE					= C::SDL_GL_GREEN_SIZE,
@@ -97,11 +115,20 @@ namespace SDL
 			FRAMEBUFFER_SRGB_CAPABLE	= C::SDL_GL_FRAMEBUFFER_SRGB_CAPABLE
 		};
 
-		enum class ContextProfile : std::underlying_type<C::SDL_GLprofile>::type
+		enum class ContextProfile
+			: std::underlying_type<C::SDL_GLprofile>::type
 		{
 			CORE			= C::SDL_GL_CONTEXT_PROFILE_CORE,
 			COMPATIBILITY	= C::SDL_GL_CONTEXT_PROFILE_COMPATIBILITY,
 			ES				= C::SDL_GL_CONTEXT_PROFILE_ES
+		};
+
+		enum class SwapInterval
+			: int
+		{
+			LATE_SYNC = -1,
+			IMMEDIATE = 0,	// this is the default as well
+			SYNC = 1
 		};
 
 		__alwaysinline
@@ -117,19 +144,12 @@ namespace SDL
 		{
 			return C::SDL_GL_GetAttribute( static_cast<C::SDL_GLattr>( attr ), value );
 		}
-		
-		enum class SwapInterval : int
-		{
-			LATE_SYNC	= -1,
-			IMMEDIATE	= 0,
-			SYNC		= 1
-		};
 
 		__alwaysinline
-		int
+		bool
 		SetSwapInterval( SwapInterval value ) noexcept
 		{
-			return C::SDL_GL_SetSwapInterval( static_cast<int>( value ) );
+			return C::SDL_GL_SetSwapInterval( static_cast<int>( value ) ) == 0;
 		}
 
 		__alwaysinline
@@ -140,7 +160,7 @@ namespace SDL
 		}
 
 		__alwaysinline
-		int
+		bool
 		ToggleSwapInterval() noexcept
 		{
 			return SetSwapInterval(

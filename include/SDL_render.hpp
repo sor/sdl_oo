@@ -3,6 +3,8 @@
 #define _SDL_RENDER_HPP
 
 #include "SDL_stdinc.hpp"
+
+#include "SDL_error.hpp"
 #include "SDL_rect.hpp"
 #include "SDL_video.hpp"
 
@@ -29,7 +31,7 @@ namespace SDL
 
 	class Renderer
 	{
-		typedef C::SDL_Renderer		ptr_type;
+		using ptr_type = C::SDL_Renderer;
 		std::shared_ptr<ptr_type>	ptr;
 
 		PTR_DELETER( C::SDL_DestroyRenderer )
@@ -77,7 +79,7 @@ namespace SDL
 
 		__alwaysinline
 		int
-		SetDrawColor( const SDL::Color & color ) noexcept
+		SetDrawColor( const Color & color ) noexcept
 		{
 			return C::SDL_SetRenderDrawColor( *this, color.r, color.g, color.b, color.a );
 		}
@@ -92,9 +94,7 @@ namespace SDL
 		}
 
 		int Copy( Texture & texture ) noexcept;
-
 		int Copy( Texture & texture, const Rect & dstrect ) noexcept;
-
 		int Copy( Texture & texture, const Rect & srcrect, const Rect & dstrect ) noexcept;
 
 		__alwaysinline
@@ -164,12 +164,12 @@ namespace SDL
 
 	class Texture
 	{
-		typedef C::SDL_Texture		ptr_type;
+		using ptr_type = C::SDL_Texture;
 		std::shared_ptr<ptr_type>	ptr;
 
 		PTR_DELETER( C::SDL_DestroyTexture )
 
-		Surface		surf;
+		//Surface	surf;	// problem?
 		Renderer	rend;
 
 		PixelFormat::Type	format;
@@ -177,6 +177,9 @@ namespace SDL
 
 	public:
 		PTR_AUTOCAST
+
+		__alwaysinline int width()  const { return w; }
+		__alwaysinline int height() const { return h; }
 
 		__alwaysinline
 		Texture() noexcept
@@ -190,7 +193,7 @@ namespace SDL
 		Texture( Renderer & rend, Surface & surf ) noexcept;
 		//Texture( Renderer & rend, C::SDL_Surface * surf ) noexcept;
 		Texture( Renderer & rend, C::SDL_Texture * tex ) noexcept;
-		
+
 		//void destroy() noexcept;
 		//Texture & operator=( Texture && other ) noexcept;
 
@@ -206,7 +209,7 @@ namespace SDL
 		// Draws the texture at the given position with a scaled size
 		void Draw( const Point & pos, const float scale ) noexcept;
 
-		// Draws the selected sprite at the given position  with its normal size
+		// Draws the selected sprite at the given position with its normal size
 		void DrawSprite( const Point & pos, const Point & count, const Point & index ) noexcept;
 
 		// Draws the selected sprite at the given position with a scaled size
@@ -254,18 +257,19 @@ namespace SDL
 	}
 
 	// TEX
-
+	// TODO: rework so that this uses IMG_Load, so that there is no longer need for IMG::LoadTexture
 	__alwaysinline
 	Texture::Texture( Renderer & rend, const char * file )
 		: rend( rend )
 	{
-		auto srf = C::SDL_LoadBMP_RW( C::SDL_RWFromFile( file, "rb" ), 1 );
-		if( !srf )
+		Surface surf( file );
+		//auto surf = C::SDL_LoadBMP_RW( C::SDL_RWFromFile( file, "rb" ), 1 );
+		if( !surf )
 			THROW_SDL_ERROR( -1 );
 
-		this->surf = srf;
+		//this->surf = surf;
 		this->ptr  = std::shared_ptr<ptr_type>(
-			C::SDL_CreateTextureFromSurface( this->rend, this->surf ),
+			C::SDL_CreateTextureFromSurface( this->rend, surf ),
 			deleter );
 
 		Uint32 fmt;
@@ -277,10 +281,10 @@ namespace SDL
 	Texture::Texture( Renderer & rend, Surface & surf ) noexcept
 		: rend( rend )
 	{
-		this->surf	= surf;
+		//this->surf	= surf;
 
 		this->ptr	= std::shared_ptr<ptr_type>(
-			C::SDL_CreateTextureFromSurface( this->rend, this->surf ),
+			C::SDL_CreateTextureFromSurface( this->rend, surf ),
 			deleter );
 
 		Uint32 fmt;
@@ -288,7 +292,7 @@ namespace SDL
 		format = static_cast<PixelFormat::Type>( fmt );
 	}
 
-	// no surf, maybe not good
+	// no surf, maybe not good, or maybe its good?
 	__alwaysinline
 	Texture::Texture( Renderer & rend, C::SDL_Texture * tex ) noexcept
 		: rend( rend )

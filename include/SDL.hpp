@@ -5,6 +5,7 @@
 //#define NO_SDL_GLEXT
 
 #include "SDL_stdinc.hpp"
+
 #include "SDL_error.hpp"
 #include "SDL_events.hpp"
 #include "SDL_render.hpp"
@@ -23,19 +24,15 @@
 #include "SDL_clipboard.h"
 #include "SDL_cpuinfo.h"
 #include "SDL_endian.h"
-#include "SDL_error.h"
-#include "SDL_events.h"
 #include "SDL_hints.h"
 #include "SDL_loadso.h"
 #include "SDL_log.h"
 #include "SDL_mutex.h"
 #include "SDL_power.h"
-#include "SDL_render.h"
 #include "SDL_rwops.h"
 #include "SDL_thread.h"
 #include "SDL_timer.h"
 #include "SDL_version.h"
-#include "SDL_video.h"
 */
 
 namespace SDL
@@ -78,7 +75,8 @@ namespace SDL
 	class Init
 	{
 	public:
-		enum class Flags : Uint32
+		enum class Flags
+			: Uint32
 		{
 			NONE			= 0,
 			TIMER			= SDL_INIT_TIMER,
@@ -108,20 +106,7 @@ namespace SDL
 		}
 	};
 
-	__alwaysinline constexpr
-	Init::Flags
-	operator|( Init::Flags lhs, Init::Flags rhs )
-	{
-		return static_cast<Init::Flags>( static_cast<Uint32>( lhs ) | static_cast<Uint32>( rhs ) );
-	}
-
-	__alwaysinline
-	Init::Flags &
-	operator|=( Init::Flags & lhs, Init::Flags rhs )
-	{
-		lhs = static_cast<Init::Flags>( static_cast<Uint32>( lhs ) | static_cast<Uint32>( rhs ) );
-		return lhs;
-	}
+	ENUM_CLASS_BITWISE( Init::Flags )
 
 	// this is just here to determine if static linking worked
 	void dummy();
