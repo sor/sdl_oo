@@ -14,25 +14,25 @@
 #pragma warning (error: 4297)
 #pragma warning (error: 4715)
 
-#ifndef __alwaysinline
-#if defined(_MSC_VER)
-#define __alwaysinline __forceinline
-#elif ( (defined(__GNUC__) && (__GNUC__ >= 4)) || defined(__clang__) )
-#define __alwaysinline __attribute__((always_inline)) inline
+#ifdef HIDE_ORIGINAL_SDL
+#define SDL_NAMESPACE		::SDL::C
+#define SDL_NAMESPACE_BEGIN	namespace SDL { namespace C {
+#define SDL_NAMESPACE_END	} }
 #else
-#define __alwaysinline __inline__
-#endif
+#define SDL_NAMESPACE
+#define SDL_NAMESPACE_BEGIN
+#define SDL_NAMESPACE_END
 #endif
 
-#define __mayinline __inline__
-
-#ifdef __unused
+#ifdef unused
+#elif __cplusplus >= 201703L
+	#define unused( t, v ) [[maybe_unused]] t v
 #elif defined(__GNUC__)
-	#define __unused(x) UNUSED_ ## x __attribute__((unused))
+	#define unused( t, x ) t UNUSED_ ## x __attribute__((unused))
 #elif defined(__LCLINT__)
-	#define __unused(x) /*@unused@*/ x
+	#define unused( t, x ) t /*@unused@*/ x
 #else
-	#define __unused(x)
+	#define unused( t, x ) t
 #endif
 
 #ifdef _WIN32
@@ -47,79 +47,175 @@
 	#define M_TAU (2.0*M_PI)
 #endif
 
-// TODO: is this really correct?
-template <typename T>
-__alwaysinline constexpr
-typename std::underlying_type<T>::type
-base_cast( T o )
+template <typename Enum>
+constexpr inline
+std::underlying_type_t<Enum>
+to_underlying( Enum e ) noexcept
 {
-	return static_cast<typename std::underlying_type<T>::type>( o );
+	return static_cast<std::underlying_type_t<Enum>>( e );
+}
+
+template <typename Enum>
+constexpr inline
+std::underlying_type_t<Enum> *
+to_underlying_ptr( Enum * e ) noexcept
+{
+	return reinterpret_cast<std::underlying_type_t<Enum> *>( e );
 }
 
 #define membersizeof(s,m) sizeof(((s *)0)->m)
 #define structsizewithout(s,m) (sizeof(s)-membersizeof(s,m))
 
 template <typename T, size_t N>
-constexpr size_t countof( T const (&)[N] ) noexcept { return N; }
+constexpr inline
+size_t
+countof( T const (&)[N] ) noexcept { return N; }
+
+SDL_NAMESPACE_BEGIN
+#include <SDL_stdinc.h>
+SDL_NAMESPACE_END
 
 namespace SDL
 {
-	namespace C
+	using SDL_NAMESPACE::Sint8;
+	using SDL_NAMESPACE::Uint8;
+	using SDL_NAMESPACE::Sint16;
+	using SDL_NAMESPACE::Uint16;
+	using SDL_NAMESPACE::Sint32;
+	using SDL_NAMESPACE::Uint32;
+	using SDL_NAMESPACE::Sint64;
+	using SDL_NAMESPACE::Uint64;
+
+	// Enum hierarchical inheritence:
+	// Since SDL does not define class enums, we kind of want to derive from them, but this is not possible in C++ (nor in C)
+	// Therefore the following data-structures and functions prevent us from having to (static/reinterpret)_cast from and to
+	//   unrelated types and occasionally getting it wrong ;)
+	// Underlying: Is the fundamental type that also defines how many bits of space is available to the enum, e.g. SDL::Uint32
+	// Base: Is usually the non-class enum from SDL
+	//       OR it might be the same as Underlying when SDL defines no enum and just some constants
+	// Derived: Is usually the class enum defined in this wrapper
+	//
+	// The enums need to be defined by either ENUM_CLASS_DEFAULT, ENUM_CLASS_TYPE, or ENUM_CLASS_BASE
+	//   and out-of-class provided with additional info via ENUM_INFO_DEFAULT, ENUM_INFO_TYPE, or ENUM_INFO_BASE
+
+	template <typename Derived> struct enum_info {};
+	//template <typename Derived> using  enum_info_b = typename enum_info<Derived>::base;
+	//template <typename Derived> using  enum_info_t = typename enum_info<Derived>::underlying;
+
+	#define ENUM_CLASS_DEFAULT( ENUM )\
+		enum class ENUM
+
+	#define ENUM_CLASS_TYPE( ENUM, UNDERLYING )\
+		enum class ENUM : UNDERLYING
+
+	#define ENUM_CLASS_BASE( ENUM, BASE )\
+		enum class ENUM : std::underlying_type_t<BASE>
+
+	#define ENUM_INFO_DEFAULT( ENUM )\
+		template <> struct enum_info<enum class ENUM> { using base = std::underlying_type_t<ENUM>; using underlying = std::underlying_type_t<ENUM>; };
+
+	#define ENUM_INFO_TYPE( ENUM, UNDERLYING )\
+		template <> struct enum_info<enum class ENUM> { using base = UNDERLYING; using underlying = UNDERLYING; };
+
+	#define ENUM_INFO_BASE( ENUM, BASE )\
+		template <> struct enum_info<enum class ENUM> { using base = BASE; using underlying = std::underlying_type_t<base>; };
+
+	template <typename Derived, typename Base = typename enum_info<Derived>::base>
+	constexpr inline
+	Base
+	to_base( const Derived e )
 	{
-		#include <SDL_stdinc.h>
+		return static_cast<Base>( e );
+	}
+	
+	/*
+	template <typename Enum, typename Base = typename enum_info<Enum>::base>
+	constexpr inline
+	Base &
+	to_base_ref( Enum & e )
+	{
+		return reinterpret_cast<Base &>( e );
 	}
 
-	using C::Sint8;
-	using C::Uint8;
-	using C::Sint16;
-	using C::Uint16;
-	using C::Sint32;
-	using C::Uint32;
-	using C::Sint64;
-	using C::Uint64;
+	template <typename Enum, typename Base = typename enum_info<Enum>::base>
+	constexpr inline
+	const Base &
+	to_base_ref( const Enum & e )
+	{
+		return reinterpret_cast<const Base &>( e );
+	}
 
-	#define foreach( iter, collection )\
-		for(auto iter = begin( collection );\
-			iter     != end( collection );\
-			++iter )
+	template <typename Enum, typename Base = typename enum_info<Enum>::base, typename Type = typename enum_info<Enum>::type>
+	constexpr inline
+	Base &
+	to_base_ref( Type & e )
+	{
+		return reinterpret_cast<Base &>( e );
+	}
+	*/
+
+	template <typename Derived, typename Base = typename enum_info<Derived>::base, typename Underlying = typename enum_info<Derived>::underlying>
+	constexpr inline
+	const Derived &
+	to_derived( const Underlying & e )
+	{
+		// FIXME: is this portable? may need -fno-strict-aliasing to work?!
+		return reinterpret_cast<const Derived &>( e );
+	}
+
+	template <typename Derived, typename Base = typename enum_info<Derived>::base>
+	constexpr inline
+	Base *
+	to_base_ptr( Derived * e )
+	{
+		return reinterpret_cast<Base *>( e );
+	}
+
+	template <typename Derived, typename Base = typename enum_info<Derived>::base>
+	constexpr inline
+	const Base *
+	to_base_ptr( const Derived * e )
+	{
+		return reinterpret_cast<const Base *>( e );
+	}
 
 	#define PTR_DELETER( fkt )\
-		static __alwaysinline\
+		static inline\
 		void\
 		deleter( ptr_type * deletee )\
 		{\
 			fkt( deletee );\
 		}\
-		static __alwaysinline\
+		static inline\
 		void\
-		not_deleter( ptr_type * __unused( deletee ) )\
+		not_deleter( unused( ptr_type *, deletee ) )\
 		{}
 
 	#define DIRECT_DELETER( fkt )\
-		static __alwaysinline\
+		static inline\
 		void\
-		deleter( ptr_type deletee )\
+		deleter( ptr_type & deletee )\
 		{\
 			fkt( deletee );\
 		}\
-		static __alwaysinline\
+		static inline\
 		void\
-		not_deleter( ptr_type & __unused( deletee ) )\
+		not_deleter( unused( ptr_type &, deletee ) )\
 		{}
 
 	// Autocast this to the SDL_* Pointer and to bool
 	#define PTR_AUTOCAST\
-		__alwaysinline\
+		inline\
 		operator bool() const noexcept\
 		{\
 			return static_cast<bool>( this->ptr );\
 		}\
-		__alwaysinline\
+		inline\
 		operator ptr_type * () noexcept\
 		{\
 			return this->ptr.get();\
 		}\
-		__alwaysinline\
+		inline\
 		operator const ptr_type * () const noexcept\
 		{\
 			return this->ptr.get();\
@@ -127,97 +223,97 @@ namespace SDL
 
 	// Access the members of the ptr structure directly
 	#define PTR_STRUCT_DEREF\
-		__alwaysinline\
+		inline\
 		ptr_type *\
 		operator -> () noexcept\
 		{\
 			return this->ptr.get();\
 		}\
-		__alwaysinline\
+		inline\
 		const ptr_type *\
 		operator -> () const noexcept\
 		{\
 			return this->ptr.get();\
 		}
 
-	#define ENUM_CLASS_BITWISE( ENUM )\
-		constexpr __alwaysinline\
+	#define ENUM_BITWISE( ENUM )\
+		constexpr inline\
 		ENUM\
 		operator | ( ENUM lhs, ENUM rhs ) noexcept\
 		{\
-			return static_cast<ENUM>( base_cast( lhs ) | base_cast( rhs ) );\
+			return static_cast<ENUM>( to_underlying( lhs ) | to_underlying( rhs ) );\
 		}\
-		__alwaysinline\
+		inline\
 		ENUM &\
 		operator |= ( ENUM & lhs, ENUM rhs )\
 		{\
-			lhs = static_cast<ENUM>( base_cast( lhs ) | base_cast( rhs ) );\
+			lhs = static_cast<ENUM>( to_underlying( lhs ) | to_underlying( rhs ) );\
 			return lhs;\
 		}\
-		constexpr __alwaysinline\
+		constexpr inline\
 		ENUM\
 		operator & ( ENUM lhs, ENUM rhs ) noexcept\
 		{\
-			return static_cast<ENUM>( base_cast( lhs ) & base_cast( rhs ) );\
+			return static_cast<ENUM>( to_underlying( lhs ) & to_underlying( rhs ) );\
 		}\
-		__alwaysinline\
+		inline\
 		ENUM &\
 		operator &= ( ENUM & lhs, ENUM rhs )\
 		{\
-			lhs = static_cast<ENUM>( base_cast( lhs ) & base_cast( rhs ) );\
+			lhs = static_cast<ENUM>( to_underlying( lhs ) & to_underlying( rhs ) );\
 			return lhs;\
 		}\
-		constexpr __alwaysinline\
+		constexpr inline\
 		ENUM\
 		operator ^ ( ENUM lhs, ENUM rhs ) noexcept\
 		{\
-			return static_cast<ENUM>( base_cast( lhs ) ^ base_cast( rhs ) );\
+			return static_cast<ENUM>( to_underlying( lhs ) ^ to_underlying( rhs ) );\
 		}\
-		__alwaysinline\
+		inline\
 		ENUM &\
 		operator ^= ( ENUM & lhs, ENUM rhs )\
 		{\
-			lhs = static_cast<ENUM>( base_cast( lhs ) ^ base_cast( rhs ) );\
+			lhs = static_cast<ENUM>( to_underlying( lhs ) ^ to_underlying( rhs ) );\
 			return lhs;\
 		}\
-		constexpr __alwaysinline\
+		constexpr inline\
 		ENUM\
 		operator ~ ( ENUM rhs )\
 		{\
-			return static_cast<ENUM>( ~base_cast( rhs ) );\
+			return static_cast<ENUM>( ~to_underlying( rhs ) );\
 		}\
-		constexpr __alwaysinline\
+		constexpr inline\
 		bool\
 		operator ! ( ENUM rhs )\
 		{\
-			return !base_cast( rhs );\
+			return !to_underlying( rhs );\
 		}
 
-	__alwaysinline
+	inline
 	void *
 	memset( void * dst, int c, size_t len )
 	{
-		return C::SDL_memset( dst, c, len );
+		return SDL_NAMESPACE::SDL_memset( dst, c, len );
 	}
 
 	template <typename T>
-	__alwaysinline
+	inline
 	void *
 	zero( T & x )
 	{
-		return C::SDL_zero( x );
+		return SDL_NAMESPACE::SDL_zero( x );
 	}
 
 	template <typename T>
-	__alwaysinline
+	inline
 	void *
 	zerop( T * x )
 	{
-		return C::SDL_zerop( x );
+		return SDL_NAMESPACE::SDL_zerop( x );
 	}
 
 	template <typename T>
-	__alwaysinline
+	inline
 	void
 	swap_noexcept( T & lhs, T & rhs ) noexcept
 	{
@@ -248,7 +344,7 @@ namespace SDL
 	...but i dont know how to do it
 	*/
 	template <typename CONT, typename T>
-	__alwaysinline
+	inline
 	bool
 	contains( const CONT & container, const T & needle )
 	{

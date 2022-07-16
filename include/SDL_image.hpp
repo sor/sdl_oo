@@ -11,80 +11,79 @@
 #define THROW_IMG_ERROR( code )\
 	throw SDL::Exception( code, SDL::IMG::Error(), __FILE__, __LINE__ )
 
+SDL_NAMESPACE_BEGIN
+#include <SDL_image.h>
+SDL_NAMESPACE_END
+
 namespace SDL
 {
-	namespace C
-	{
-		#include <SDL_image.h>
-	}
-
 	namespace IMG
 	{
-		static __alwaysinline
+		static inline
 		const char *
 		Error() noexcept
 		{
-			return C::IMG_GetError();
+			return SDL_NAMESPACE::IMG_GetError();
 		}
 
-		static __alwaysinline
+		class Init
+		{
+		public:
+			ENUM_CLASS_BASE( Flags, SDL_NAMESPACE::IMG_InitFlags )
+			{
+				None       = 0,
+				JPG        = SDL_NAMESPACE::IMG_INIT_JPG,
+				PNG        = SDL_NAMESPACE::IMG_INIT_PNG,
+				TIF        = SDL_NAMESPACE::IMG_INIT_TIF,
+				WEBP       = SDL_NAMESPACE::IMG_INIT_WEBP,
+				Everything = JPG | PNG | TIF | WEBP
+			};
+
+			inline
+			Init( const Flags flags = Flags::Everything )
+			{
+				const int code = SDL_NAMESPACE::IMG_Init( to_underlying( flags ) );
+				if( code < 0 )
+					THROW_IMG_ERROR( code );
+			}
+
+			inline
+			~Init() noexcept
+			{
+				SDL_NAMESPACE::IMG_Quit();
+			}
+		};
+
+		ENUM_BITWISE( Init::Flags );
+
+		static inline
 		Surface
 		Load( const char* file )
 		{
-			auto srf = C::IMG_Load( file );
+			auto srf = SDL_NAMESPACE::IMG_Load( file );
 			if( !srf )
 				THROW_IMG_ERROR( -1 );
 
 			return Surface( srf );
 		}
 
-		static __alwaysinline
+		static inline
 		Texture
 		LoadTexture( Renderer& renderer, const char* file, const Uint32 color_key = SDL_MAX_UINT32 )
 		{
-			Surface surface = C::IMG_Load( file );
+			Surface surface = SDL_NAMESPACE::IMG_Load( file );
 
 			if( !surface )
 				THROW_IMG_ERROR( -1 );
 
 			if( color_key != SDL_MAX_UINT32 )
-				C::SDL_SetColorKey( surface, C::SDL_TRUE, color_key );
+				SDL_NAMESPACE::SDL_SetColorKey( surface, SDL_NAMESPACE::SDL_TRUE, color_key );
 
 			return Texture( renderer, surface );
 		}
-
-		class Init
-		{
-		public:
-			enum class Flags
-				: std::underlying_type<C::IMG_InitFlags>::type
-			{
-				NONE       = 0,
-				JPG        = C::IMG_INIT_JPG,
-				PNG        = C::IMG_INIT_PNG,
-				TIF        = C::IMG_INIT_TIF,
-				WEBP       = C::IMG_INIT_WEBP,
-				EVERYTHING = JPG | PNG | TIF | WEBP
-			};
-
-			__alwaysinline
-			void
-			initialize( Flags flags = Flags::NONE ) const
-			{
-				const int code = C::IMG_Init( static_cast<int>(flags) );
-				if( code < 0 )
-					THROW_IMG_ERROR( code );
-			}
-
-			__alwaysinline
-			~Init() noexcept
-			{
-				C::IMG_Quit();
-			}
-		};
-
-		ENUM_CLASS_BITWISE( Init::Flags )
 	}
+
+	ENUM_INFO_BASE( IMG::Init::Flags, SDL_NAMESPACE::IMG_InitFlags );
 }
 
 #endif

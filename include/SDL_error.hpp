@@ -10,18 +10,17 @@
 #define THROW_SDL_EXCEPTION( code, text )\
 	throw SDL::Exception( code, text, __FILE__, __LINE__ )
 
+SDL_NAMESPACE_BEGIN
+#include <SDL_error.h>
+SDL_NAMESPACE_END
+
 namespace SDL
 {
-	namespace C
-	{
-		#include <SDL_error.h>
-	}
-
-	static __alwaysinline
+	static inline
 	const char *
 	Error() noexcept
 	{
-		return C::SDL_GetError();
+		return SDL_NAMESPACE::SDL_GetError();
 	}
 
 	class Exception
@@ -32,38 +31,38 @@ namespace SDL
 		int				line;
 
 	public:
-		__alwaysinline
+		inline
 		Exception( const int code, const char * text ) noexcept
 			: code( code ), text( text )
 		{}
 
-		__alwaysinline
+		inline
 		Exception( const int code, const char * text, const char * file, int line ) noexcept
 			: code( code ), text( text ), file( file ), line( line )
 		{}
 
 		/*
-		__alwaysinline
+		inline
 		Exception( const int code, const std::string & text ) noexcept
 		:	code( code ), text( text )
 		{}
 		*/
 
-		__alwaysinline
+		inline
 		int
 		Code() const noexcept
 		{
 			return code;
 		}
 
-		__alwaysinline
+		inline
 		std::string &
 		Text() noexcept
 		{
 			return text;
 		}
 
-		__alwaysinline
+		inline
 		const std::string &
 		Text() const noexcept
 		{

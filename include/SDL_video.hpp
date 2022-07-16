@@ -7,167 +7,184 @@
 #include "SDL_rect.hpp"
 #include "SDL_surface.hpp"
 
+SDL_NAMESPACE_BEGIN
+#include <SDL_video.h>
+SDL_NAMESPACE_END
+
 namespace SDL
 {
-	namespace C
+	// add virtual dtor if final gets removed
+	class Window final
 	{
-		#include <SDL_video.h>
-	}
-
-	class Window
-	{
-		using ptr_type = C::SDL_Window;
+		using ptr_type = SDL_NAMESPACE::SDL_Window;
 		std::shared_ptr<ptr_type>	ptr;
 
-		PTR_DELETER( C::SDL_DestroyWindow )
+		PTR_DELETER( SDL_NAMESPACE::SDL_DestroyWindow )
 
 	public:
 		PTR_AUTOCAST
 
-		enum class Flags
-			: std::underlying_type<C::SDL_WindowFlags>::type
+		ENUM_CLASS_BASE( Flags, SDL_NAMESPACE::SDL_WindowFlags )
 		{
-			NONE               = 0,
-			FULLSCREEN         = C::SDL_WINDOW_FULLSCREEN,
-			OPENGL             = C::SDL_WINDOW_OPENGL,
-			SHOWN              = C::SDL_WINDOW_SHOWN,
-			HIDDEN             = C::SDL_WINDOW_HIDDEN,
-			BORDERLESS         = C::SDL_WINDOW_BORDERLESS,
-			RESIZABLE          = C::SDL_WINDOW_RESIZABLE,
-			MINIMIZED          = C::SDL_WINDOW_MINIMIZED,
-			MAXIMIZED          = C::SDL_WINDOW_MAXIMIZED,
-			INPUT_GRABBED      = C::SDL_WINDOW_INPUT_GRABBED,
-			INPUT_FOCUS        = C::SDL_WINDOW_INPUT_FOCUS,
-			MOUSE_FOCUS        = C::SDL_WINDOW_MOUSE_FOCUS,
-			FULLSCREEN_DESKTOP = C::SDL_WINDOW_FULLSCREEN_DESKTOP,
-			FOREIGN            = C::SDL_WINDOW_FOREIGN,
-			ALLOW_HIGHDPI      = C::SDL_WINDOW_ALLOW_HIGHDPI
+			None                = 0,
+			Fullscreen          = SDL_NAMESPACE::SDL_WINDOW_FULLSCREEN,
+			FullscreenDesktop   = SDL_NAMESPACE::SDL_WINDOW_FULLSCREEN_DESKTOP,
+			OpenGL              = SDL_NAMESPACE::SDL_WINDOW_OPENGL,
+			Vulkan              = SDL_NAMESPACE::SDL_WINDOW_VULKAN,
+			Metal               = SDL_NAMESPACE::SDL_WINDOW_METAL,
+			Shown               = SDL_NAMESPACE::SDL_WINDOW_SHOWN,
+			Hidden              = SDL_NAMESPACE::SDL_WINDOW_HIDDEN,
+			Borderless          = SDL_NAMESPACE::SDL_WINDOW_BORDERLESS,
+			Resizable           = SDL_NAMESPACE::SDL_WINDOW_RESIZABLE,
+			Minimized           = SDL_NAMESPACE::SDL_WINDOW_MINIMIZED,
+			Maximized           = SDL_NAMESPACE::SDL_WINDOW_MAXIMIZED,
+			InputGrabbed        = SDL_NAMESPACE::SDL_WINDOW_INPUT_GRABBED,
+			InputFocus          = SDL_NAMESPACE::SDL_WINDOW_INPUT_FOCUS,
+			MouseGrabbed        = SDL_NAMESPACE::SDL_WINDOW_MOUSE_GRABBED, // same as Input_Grabbed
+			MouseFocus          = SDL_NAMESPACE::SDL_WINDOW_MOUSE_FOCUS,
+			MouseCapture        = SDL_NAMESPACE::SDL_WINDOW_MOUSE_CAPTURE,
+			KeyboardGrabbed     = SDL_NAMESPACE::SDL_WINDOW_KEYBOARD_GRABBED,
+			Foreign             = SDL_NAMESPACE::SDL_WINDOW_FOREIGN,
+			AllowHighDPI        = SDL_NAMESPACE::SDL_WINDOW_ALLOW_HIGHDPI,
+			AlwaysOnTop         = SDL_NAMESPACE::SDL_WINDOW_ALWAYS_ON_TOP,
+			SkipTaskbar         = SDL_NAMESPACE::SDL_WINDOW_SKIP_TASKBAR,
+			Utility             = SDL_NAMESPACE::SDL_WINDOW_UTILITY,
+			Tooltip             = SDL_NAMESPACE::SDL_WINDOW_TOOLTIP,
+			PopupMenu           = SDL_NAMESPACE::SDL_WINDOW_POPUP_MENU,
 		};
 
-		enum class Pos
-			: int // they are passed as int by the C functions
+		ENUM_CLASS_TYPE( Pos, int ) // they are passed as int by the C functions
 		{
-			UNDEFINED_MASK	= SDL_WINDOWPOS_UNDEFINED_MASK,
-			UNDEFINED		= SDL_WINDOWPOS_UNDEFINED,
-			CENTERED_MASK	= SDL_WINDOWPOS_CENTERED_MASK,
-			CENTERED		= SDL_WINDOWPOS_CENTERED
+			Undefined           = SDL_WINDOWPOS_UNDEFINED,
+			Centered            = SDL_WINDOWPOS_CENTERED,
 		};
 
-		constexpr __alwaysinline
-		Window() noexcept
-			: ptr()
-		{}
+		constexpr Window() noexcept = default;
+		Window(const char *title, Pos x, Pos y, int w, int h, Flags flags) noexcept;
 
-		__alwaysinline
-		Window(	const char *title, Pos x, Pos y, int w, int h, Flags flags ) noexcept
-			: ptr( C::SDL_CreateWindow( title, static_cast<int>( x ), static_cast<int>( y ), w, h, static_cast<Uint32>( flags ) ), deleter )
-		{}
-
-		__alwaysinline
-		~Window() noexcept
-		{}
-
-		__alwaysinline
-		void
-		SetTitle( const std::string & title ) noexcept
-		{
-			SetTitle( title.c_str() );
-		}
-
-		__alwaysinline
-		void
-		SetTitle( const char * title ) noexcept
-		{
-			C::SDL_SetWindowTitle( *this, title );
-		}
+		void SetTitle(const std::string & title) noexcept;
+		void SetTitle(const char * title) noexcept;
 	};
-
-	ENUM_CLASS_BITWISE( Window::Flags )
 
 	namespace GL
 	{
-		enum class Attr
-			: std::underlying_type<C::SDL_GLattr>::type
+		ENUM_CLASS_BASE( Attr, SDL_NAMESPACE::SDL_GLattr )
 		{
-			RED_SIZE					= C::SDL_GL_RED_SIZE,
-			GREEN_SIZE					= C::SDL_GL_GREEN_SIZE,
-			BLUE_SIZE					= C::SDL_GL_BLUE_SIZE,
-			ALPHA_SIZE					= C::SDL_GL_ALPHA_SIZE,
-			BUFFER_SIZE					= C::SDL_GL_BUFFER_SIZE,
-			DOUBLEBUFFER				= C::SDL_GL_DOUBLEBUFFER,
-			DEPTH_SIZE					= C::SDL_GL_DEPTH_SIZE,
-			STENCIL_SIZE				= C::SDL_GL_STENCIL_SIZE,
-			ACCUM_RED_SIZE				= C::SDL_GL_ACCUM_RED_SIZE,
-			ACCUM_GREEN_SIZE			= C::SDL_GL_ACCUM_GREEN_SIZE,
-			ACCUM_BLUE_SIZE				= C::SDL_GL_ACCUM_BLUE_SIZE,
-			ACCUM_ALPHA_SIZE			= C::SDL_GL_ACCUM_ALPHA_SIZE,
-			STEREO						= C::SDL_GL_STEREO,
-			MULTISAMPLEBUFFERS			= C::SDL_GL_MULTISAMPLEBUFFERS,
-			MULTISAMPLESAMPLES			= C::SDL_GL_MULTISAMPLESAMPLES,
-			ACCELERATED_VISUAL			= C::SDL_GL_ACCELERATED_VISUAL,
-			RETAINED_BACKING			= C::SDL_GL_RETAINED_BACKING,
-			CONTEXT_MAJOR_VERSION		= C::SDL_GL_CONTEXT_MAJOR_VERSION,
-			CONTEXT_MINOR_VERSION		= C::SDL_GL_CONTEXT_MINOR_VERSION,
-			CONTEXT_EGL					= C::SDL_GL_CONTEXT_EGL,
-			CONTEXT_FLAGS				= C::SDL_GL_CONTEXT_FLAGS,
-			CONTEXT_PROFILE_MASK		= C::SDL_GL_CONTEXT_PROFILE_MASK,
-			SHARE_WITH_CURRENT_CONTEXT	= C::SDL_GL_SHARE_WITH_CURRENT_CONTEXT,
-			FRAMEBUFFER_SRGB_CAPABLE	= C::SDL_GL_FRAMEBUFFER_SRGB_CAPABLE
+			RedSize                     = SDL_NAMESPACE::SDL_GL_RED_SIZE,
+			GreenSize                   = SDL_NAMESPACE::SDL_GL_GREEN_SIZE,
+			BlueSize                    = SDL_NAMESPACE::SDL_GL_BLUE_SIZE,
+			AlphaSize                   = SDL_NAMESPACE::SDL_GL_ALPHA_SIZE,
+			BufferSize                  = SDL_NAMESPACE::SDL_GL_BUFFER_SIZE,
+			DoubleBuffer                = SDL_NAMESPACE::SDL_GL_DOUBLEBUFFER,
+			DepthSize                   = SDL_NAMESPACE::SDL_GL_DEPTH_SIZE,
+			StencilSize                 = SDL_NAMESPACE::SDL_GL_STENCIL_SIZE,
+			AccumRedSize                = SDL_NAMESPACE::SDL_GL_ACCUM_RED_SIZE,
+			AccumGreenSize              = SDL_NAMESPACE::SDL_GL_ACCUM_GREEN_SIZE,
+			AccumBlueSize               = SDL_NAMESPACE::SDL_GL_ACCUM_BLUE_SIZE,
+			AccumAlphaSize              = SDL_NAMESPACE::SDL_GL_ACCUM_ALPHA_SIZE,
+			Stereo                      = SDL_NAMESPACE::SDL_GL_STEREO,
+			MultisampleBuffers          = SDL_NAMESPACE::SDL_GL_MULTISAMPLEBUFFERS,
+			MultisampleSamples          = SDL_NAMESPACE::SDL_GL_MULTISAMPLESAMPLES,
+			AcceleratedVisual           = SDL_NAMESPACE::SDL_GL_ACCELERATED_VISUAL,
+			RetainedBacking             = SDL_NAMESPACE::SDL_GL_RETAINED_BACKING,
+			ContextMajorVersion         = SDL_NAMESPACE::SDL_GL_CONTEXT_MAJOR_VERSION,
+			ContextMinorVersion         = SDL_NAMESPACE::SDL_GL_CONTEXT_MINOR_VERSION,
+			ContextEGL                  = SDL_NAMESPACE::SDL_GL_CONTEXT_EGL,
+			ContextFlags                = SDL_NAMESPACE::SDL_GL_CONTEXT_FLAGS,
+			ContextProfileMask          = SDL_NAMESPACE::SDL_GL_CONTEXT_PROFILE_MASK,
+			ShareWithCurrentContext     = SDL_NAMESPACE::SDL_GL_SHARE_WITH_CURRENT_CONTEXT,
+			FramebufferSRGBCapable      = SDL_NAMESPACE::SDL_GL_FRAMEBUFFER_SRGB_CAPABLE,
+			ContextReleaseBehavior      = SDL_NAMESPACE::SDL_GL_CONTEXT_RELEASE_BEHAVIOR,
+			ContextResetNotification    = SDL_NAMESPACE::SDL_GL_CONTEXT_RESET_NOTIFICATION,
+			ContextNoError              = SDL_NAMESPACE::SDL_GL_CONTEXT_NO_ERROR,
 		};
 
-		enum class ContextProfile
-			: std::underlying_type<C::SDL_GLprofile>::type
+		ENUM_CLASS_BASE( ContextProfile, SDL_NAMESPACE::SDL_GLprofile )
 		{
-			CORE			= C::SDL_GL_CONTEXT_PROFILE_CORE,
-			COMPATIBILITY	= C::SDL_GL_CONTEXT_PROFILE_COMPATIBILITY,
-			ES				= C::SDL_GL_CONTEXT_PROFILE_ES
+			Core            = SDL_NAMESPACE::SDL_GL_CONTEXT_PROFILE_CORE,
+			Compatibility   = SDL_NAMESPACE::SDL_GL_CONTEXT_PROFILE_COMPATIBILITY,
+			ES              = SDL_NAMESPACE::SDL_GL_CONTEXT_PROFILE_ES
 		};
 
-		enum class SwapInterval
-			: int
+		ENUM_CLASS_TYPE( SwapInterval, int )
 		{
-			LATE_SYNC = -1,
-			IMMEDIATE = 0,	// this is the default as well
-			SYNC = 1
+			Late_Sync   = -1,
+			Immediate   = 0,	// this is the default as well
+			Sync        = 1,
 		};
 
-		__alwaysinline
-		int
-		SetAttribute( Attr attr, int value ) noexcept
-		{
-			return C::SDL_GL_SetAttribute( static_cast<C::SDL_GLattr>( attr ), value );
-		}
+		int SetAttribute( const Attr attr, const int value ) noexcept;
+		int GetAttribute( const Attr attr, int * value ) noexcept;
+		bool SetSwapInterval(const SwapInterval value) noexcept;
+		SwapInterval GetSwapInterval() noexcept;
+		bool ToggleSwapInterval() noexcept;
+	}
+
+	ENUM_INFO_BASE( Window::Flags, SDL_NAMESPACE::SDL_WindowFlags );
+	ENUM_INFO_TYPE( Window::Pos,   int );
+
+	ENUM_BITWISE( Window::Flags );
+
+	ENUM_INFO_BASE( GL::Attr,           SDL_NAMESPACE::SDL_GLattr );
+	ENUM_INFO_BASE( GL::ContextProfile, SDL_NAMESPACE::SDL_GLprofile );
+	ENUM_INFO_TYPE( GL::SwapInterval,   int );
+
+	inline
+	// ctor
+	Window::Window( const char *title, Pos x, Pos y, int w, int h, Flags flags ) noexcept
+		: ptr( SDL_NAMESPACE::SDL_CreateWindow( title, to_underlying( x ), to_underlying( y ), w, h, to_underlying( flags ) ), deleter )
+	{}
+
+	inline
+	void
+	Window::SetTitle( const std::string & title ) noexcept
+	{
+		SetTitle( title.c_str() );
+	}
+
+	inline
+	void
+	Window::SetTitle( const char * title ) noexcept
+	{
+		SDL_NAMESPACE::SDL_SetWindowTitle( *this, title );
+	}
+
+	inline
+	int
+	GL::SetAttribute( const GL::Attr attr, const int value ) noexcept
+	{
+		return SDL_NAMESPACE::SDL_GL_SetAttribute( to_base( attr ), value );
+	}
 		
-		__alwaysinline
-		int
-		GetAttribute( Attr attr, int *value ) noexcept
-		{
-			return C::SDL_GL_GetAttribute( static_cast<C::SDL_GLattr>( attr ), value );
-		}
+	inline
+	int
+	GL::GetAttribute( const GL::Attr attr, int * value ) noexcept
+	{
+		return SDL_NAMESPACE::SDL_GL_GetAttribute( to_base( attr ), value );
+	}
 
-		__alwaysinline
-		bool
-		SetSwapInterval( SwapInterval value ) noexcept
-		{
-			return C::SDL_GL_SetSwapInterval( static_cast<int>( value ) ) == 0;
-		}
+	inline
+	bool
+	GL::SetSwapInterval( const GL::SwapInterval value ) noexcept
+	{
+		return SDL_NAMESPACE::SDL_GL_SetSwapInterval( to_underlying( value ) ) == 0;
+	}
 
-		__alwaysinline
-		SwapInterval
-		GetSwapInterval() noexcept
-		{
-			return static_cast<SwapInterval>( C::SDL_GL_GetSwapInterval() );
-		}
+	inline
+	GL::SwapInterval
+	GL::GetSwapInterval() noexcept
+	{
+		return to_derived<GL::SwapInterval>( SDL_NAMESPACE::SDL_GL_GetSwapInterval() );
+	}
 
-		__alwaysinline
-		bool
-		ToggleSwapInterval() noexcept
-		{
-			return SetSwapInterval(
-				GetSwapInterval() == SwapInterval::IMMEDIATE
-					? SwapInterval::SYNC
-					: SwapInterval::IMMEDIATE );
-		}
+	inline
+	bool
+	GL::ToggleSwapInterval() noexcept
+	{
+		return GL::SetSwapInterval(
+			GL::GetSwapInterval() == GL::SwapInterval::Immediate
+				? GL::SwapInterval::Sync
+				: GL::SwapInterval::Immediate );
 	}
 }
 

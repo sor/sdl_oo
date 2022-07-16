@@ -35,78 +35,76 @@
 #include "SDL_version.h"
 */
 
+SDL_NAMESPACE_BEGIN
+#include <SDL.h>
+SDL_NAMESPACE_END
+
 namespace SDL
 {
-	namespace C
-	{
-		#include "SDL.h"
-	}
-
 	/// Wait a specified number of milliseconds before returning.
-	__alwaysinline
+	inline
 	void
 	Delay( const Uint32 ms ) noexcept
 	{
-		C::SDL_Delay( ms );
+		// TODO move to timer.hpp
+		SDL_NAMESPACE::SDL_Delay( ms );
 	}
 
 	/// Wait a specified number of milliseconds before returning.
 	template<class R, class P>
-	__alwaysinline
+	inline
 	void
 	Delay( const std::chrono::duration<R, P> & dur ) noexcept
 	{
+		// TODO move to timer.hpp
 		Uint32 ms = static_cast<Uint32>( std::chrono::duration_cast<std::chrono::milliseconds>( dur ).count() );
-		C::SDL_Delay( ms );
+		SDL_NAMESPACE::SDL_Delay( ms );
 	}
 
 	/// Set a hint with normal priority
 	/// returns true if the hint was set, false otherwise
-	__alwaysinline
+	inline
 	bool
-	SetHint( const char *name, const char *value ) noexcept
+	SetHint( const char * name, const char * value ) noexcept
 	{
-		return C::SDL_SetHint( name, value ) == C::SDL_TRUE;
+		// TODO move to hints.hpp
+		return SDL_NAMESPACE::SDL_SetHint( name, value ) == SDL_NAMESPACE::SDL_TRUE;
 	}
 
-	/**
-	* FIXME: add singleton or refcounting
-	**/
 	class Init
 	{
 	public:
-		enum class Flags
-			: Uint32
+		ENUM_CLASS_TYPE( Flags, Uint32 )
 		{
-			NONE			= 0,
-			TIMER			= SDL_INIT_TIMER,
-			AUDIO			= SDL_INIT_AUDIO,
-			VIDEO			= SDL_INIT_VIDEO,
-			JOYSTICK		= SDL_INIT_JOYSTICK,
-			HAPTIC			= SDL_INIT_HAPTIC,
-			GAMECONTROLLER	= SDL_INIT_GAMECONTROLLER,
-			EVENTS			= SDL_INIT_EVENTS,
-			NOPARACHUTE		= SDL_INIT_NOPARACHUTE,
-			EVERYTHING		= SDL_INIT_EVERYTHING
+			None			= 0,
+			Timer			= SDL_INIT_TIMER,
+			Audio			= SDL_INIT_AUDIO,
+			Video			= SDL_INIT_VIDEO,
+			Joystick		= SDL_INIT_JOYSTICK,
+			Haptic			= SDL_INIT_HAPTIC,
+			GameController	= SDL_INIT_GAMECONTROLLER,
+			Events			= SDL_INIT_EVENTS,
+			NoParachute		= SDL_INIT_NOPARACHUTE,
+			Everything		= SDL_INIT_EVERYTHING
 		};
 
-		__alwaysinline
-		void
-		initialize( Flags flags = Flags::NONE ) const
+		inline
+		Init( const Flags flags = Flags::Everything )
 		{
-			const int code = C::SDL_Init( static_cast<Uint32>( flags ) );
+			const int code = SDL_NAMESPACE::SDL_Init( to_underlying( flags ) );
 			if( code < 0 )
 				THROW_SDL_ERROR( code );
 		}
 
-		__alwaysinline
+		inline
 		~Init() noexcept
 		{
-			C::SDL_Quit();
+			SDL_NAMESPACE::SDL_Quit();
 		}
 	};
 
-	ENUM_CLASS_BITWISE( Init::Flags )
+	ENUM_INFO_TYPE( Init::Flags, Uint32 );
+	ENUM_BITWISE( Init::Flags );
 
 	// this is just here to determine if static linking worked
 	void dummy();

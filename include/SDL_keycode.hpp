@@ -4,45 +4,46 @@
 
 #include "SDL_stdinc.hpp"
 
-//#include "SDL_scancode.hpp"
+SDL_NAMESPACE_BEGIN
+#include <SDL_keycode.h>
+SDL_NAMESPACE_END
+
+#include "SDL_scancode.hpp"
 
 namespace SDL
 {
-	namespace C
+	using Keycode = SDL_NAMESPACE::SDL_Keycode;
+
+	// TODO: Port all the SDLK_* to a Keycode enum class
+
+	ENUM_CLASS_BASE( Keymod, SDL_NAMESPACE::SDL_Keymod )
 	{
-		#include <SDL_keycode.h>
-	}
+		None		= SDL_NAMESPACE::KMOD_NONE,
 
-	using Keycode = C::SDL_Keycode;
+		LShift		= SDL_NAMESPACE::KMOD_LSHIFT,
+		RShift		= SDL_NAMESPACE::KMOD_RSHIFT,
+		Shift		= (LShift|RShift),
 
-	enum class Keymod
-		: std::underlying_type<C::SDL_Keymod>::type
-	{
-		NONE		= C::KMOD_NONE,
+		LCtrl		= SDL_NAMESPACE::KMOD_LCTRL,
+		RCtrl		= SDL_NAMESPACE::KMOD_RCTRL,
+		Ctrl		= (LCtrl|RCtrl),
 
-		LSHIFT		= C::KMOD_LSHIFT,
-		RSHIFT		= C::KMOD_RSHIFT,
-		SHIFT		= (LSHIFT|RSHIFT),
+		LAlt		= SDL_NAMESPACE::KMOD_LALT,
+		RAlt		= SDL_NAMESPACE::KMOD_RALT,
+		Alt			= (LAlt|RAlt),
 
-		LCTRL		= C::KMOD_LCTRL,
-		RCTRL		= C::KMOD_RCTRL,
-		CTRL		= (LCTRL|RCTRL),
+		LGui		= SDL_NAMESPACE::KMOD_LGUI,
+		RGui		= SDL_NAMESPACE::KMOD_RGUI,
+		Gui			= (LGui|RGui),
 
-		LALT		= C::KMOD_LALT,
-		RALT		= C::KMOD_RALT,
-		ALT			= (LALT|RALT),
-
-		LGUI		= C::KMOD_LGUI,
-		RGUI		= C::KMOD_RGUI,
-		GUI			= (LGUI|RGUI),
-
-		NUM			= C::KMOD_NUM,
-		CAPS		= C::KMOD_CAPS,
-		MODE		= C::KMOD_MODE,
-		RESERVED	= C::KMOD_RESERVED
+		Num			= SDL_NAMESPACE::KMOD_NUM,
+		Caps		= SDL_NAMESPACE::KMOD_CAPS,
+		Mode		= SDL_NAMESPACE::KMOD_MODE,
+		Reserved	= SDL_NAMESPACE::KMOD_RESERVED
 	};
 
-	ENUM_CLASS_BITWISE( Keymod )
+	ENUM_INFO_BASE( Keymod, SDL_NAMESPACE::SDL_Keymod );
+	ENUM_BITWISE( Keymod );
 }
 
 #endif

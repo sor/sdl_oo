@@ -6,19 +6,18 @@
 //#include "SDL_rect.hpp"
 //#include "SDL_surface.hpp"
 
+SDL_NAMESPACE_BEGIN
+#include <SDL_joystick.h>
+SDL_NAMESPACE_END
+
 namespace SDL
 {
-	namespace C
-	{
-		#include <SDL_joystick.h>
-	}
-
 	class Joystick
 	{
-		using ptr_type = C::SDL_Joystick;
+		using ptr_type = SDL_NAMESPACE::SDL_Joystick;
 		std::shared_ptr<ptr_type>	ptr;
 
-		PTR_DELETER( C::SDL_JoystickClose )
+		PTR_DELETER( SDL_NAMESPACE::SDL_JoystickClose )
 
 	public:
 		PTR_AUTOCAST
@@ -38,7 +37,7 @@ namespace SDL
 			float norm_x;	// fully pressed bottom and right results in norm_x = sqrt(0.5)
 			float norm_y;	// fully pressed bottom and right results in norm_y = sqrt(0.5)
 
-			__alwaysinline
+			inline
 			State(
 				const int deadband_x = 1600,
 				const int deadband_y = 1600,
@@ -52,7 +51,7 @@ namespace SDL
 				calculate();
 			}
 
-			__alwaysinline
+			inline
 			void
 			calculate()
 			{
@@ -135,25 +134,29 @@ namespace SDL
 			}
 		};
 
-		static __alwaysinline
+		// STATIC
+		static inline
 		int
 		Num()
 		{
-			return C::SDL_NumJoysticks();
+			return SDL_NAMESPACE::SDL_NumJoysticks();
 		}
 
-		constexpr __alwaysinline
+		// CONSTRUCTION
+		constexpr inline
 		Joystick() noexcept
 		{}
 
-		explicit __alwaysinline
+		explicit inline
 		Joystick( int device_index ) noexcept
-			: ptr( C::SDL_JoystickOpen( device_index ), deleter )
+			: ptr( SDL_NAMESPACE::SDL_JoystickOpen( device_index ), deleter )
 		{}
 
-		__alwaysinline
+		/*
+		inline
 		~Joystick() noexcept
 		{}
+		*/
 	};
 }
 

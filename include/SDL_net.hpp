@@ -9,156 +9,156 @@
 #define THROW_NET_ERROR( code )\
 	throw SDL::Exception( code, SDL::NET::Error(), __FILE__, __LINE__ )
 
+SDL_NAMESPACE_BEGIN
+#include <SDL_net.h>
+SDL_NAMESPACE_END
+
 namespace SDL
 {
-	namespace C
-	{
-		#include <SDL_net.h>
-	}
-
 	namespace NET
 	{
-		static __alwaysinline
+		static inline
 		const char *
 		Error() noexcept
 		{
-			return C::SDLNet_GetError();
+			return SDL_NAMESPACE::SDLNet_GetError();
 		}
 
 		class Init
 		{
 		public:
-			__alwaysinline
-			void
-			initialize() const
+			inline
+			Init()
 			{
-				const int code = C::SDLNet_Init();
+				const int code = SDL_NAMESPACE::SDLNet_Init();
 				if( code < 0 )
 					THROW_NET_ERROR( code );
 			}
 
-			__alwaysinline
+			inline
 			~Init() noexcept
 			{
-				C::SDLNet_Quit();
+				SDL_NAMESPACE::SDLNet_Quit();
 			}
 		};
 
 		struct IPaddress
-			: public C::IPaddress
+			: public SDL_NAMESPACE::IPaddress
 		{
-			enum InAddress
-				: Uint32
+			ENUM_CLASS_TYPE( InAddress, SDL_NAMESPACE::Uint32 )
 			{
-				ANY       = INADDR_ANY,
-				NONE      = INADDR_NONE,
-				LOOPBACK  = INADDR_LOOPBACK,
-				BROADCAST = INADDR_BROADCAST
+				Any       = INADDR_ANY,
+				None      = INADDR_NONE,
+				Loopback  = INADDR_LOOPBACK,
+				Broadcast = INADDR_BROADCAST
 			};
 
-			__alwaysinline
+			inline
 			IPaddress() noexcept
 			{}
 
-			__alwaysinline
+			inline
 			IPaddress( const Uint32 host, const Uint16 port ) noexcept
 			{
 				this->host = host;
 				this->port = port;
 			}
 
-			__alwaysinline
+			inline
 			const char *
 			ResolveIP()
 			{
-				const char * ret = C::SDLNet_ResolveIP( this );
+				const char * ret = SDL_NAMESPACE::SDLNet_ResolveIP( this );
 				if( ret == nullptr )
 					THROW_NET_ERROR( 0 );
 				return ret;
 			}
 			
 			/* server, resolving himself */
-			static __alwaysinline
+			static inline
 			IPaddress
 			ResolveHost( const Uint16 port )
 			{
 				IPaddress ret;
-				int code = C::SDLNet_ResolveHost( &ret, nullptr, port );
+				int code = SDL_NAMESPACE::SDLNet_ResolveHost( &ret, nullptr, port );
 				if( code != 0 )
 					THROW_NET_ERROR( code );
 				return ret;
 			}
 
 			/* client, resolving the server */
-			static __alwaysinline
+			static inline
 			IPaddress
 			ResolveHost( const char * host, const Uint16 port )
 			{
 				IPaddress ret;
-				int code = C::SDLNet_ResolveHost( &ret, host, port );
+				int code = SDL_NAMESPACE::SDLNet_ResolveHost( &ret, host, port );
 				if( code != 0 )
 					THROW_NET_ERROR( code );
 				return ret;
 			}
 		};
 
+
 		class TCPsocket
 		{
-			using ptr_type = C::_TCPsocket;
+			using ptr_type = SDL_NAMESPACE::_TCPsocket;
 			std::shared_ptr<ptr_type>	ptr;
 
-			PTR_DELETER( C::SDLNet_TCP_Close )
+			PTR_DELETER( SDL_NAMESPACE::SDLNet_TCP_Close )
 
 		public:
 			PTR_AUTOCAST
 
-			__alwaysinline
+			inline
 			TCPsocket() noexcept
 				: ptr()
 			{}
 
-			/* implicit */ __alwaysinline
-			TCPsocket( C::_TCPsocket * sock ) noexcept
+			/* implicit */ inline
+			TCPsocket( SDL_NAMESPACE::_TCPsocket * sock ) noexcept
 				: ptr( sock, deleter )
 			{}
 
-			explicit __alwaysinline
+			explicit inline
 			TCPsocket( IPaddress & ip )
-				: ptr( C::SDLNet_TCP_Open( &ip ), deleter )
+				: ptr( SDL_NAMESPACE::SDLNet_TCP_Open( &ip ), deleter )
 			{
 				if( !*this )
 					THROW_NET_ERROR( -1 );
 			}
 
-			__alwaysinline
+			inline
 			~TCPsocket() noexcept
 			{}
 
 			/* only for servers listening socket */
-			__alwaysinline
+			inline
 			TCPsocket
 			Accept()
 			{
-				auto ret = C::SDLNet_TCP_Accept( *this );
+				auto ret = SDL_NAMESPACE::SDLNet_TCP_Accept( *this );
 				return (ret == nullptr)
 					? TCPsocket()
 					: TCPsocket(ret);
 			}
 
-			__alwaysinline
+			inline
 			int
 			Send( const void * data, const int len )
 			{
-				return C::SDLNet_TCP_Send( *this, data, len );
+				return SDL_NAMESPACE::SDLNet_TCP_Send( *this, data, len );
 			}
 
-			__alwaysinline
+			inline
 			int
 			Recv( void * data, const int maxlen )
 			{
-				return C::SDLNet_TCP_Recv( *this, data, maxlen );
+				return SDL_NAMESPACE::SDLNet_TCP_Recv( *this, data, maxlen );
 			}
 		};
 	}
+
+	ENUM_INFO_TYPE( NET::IPaddress::InAddress, SDL_NAMESPACE::Uint32 );
 }
 #endif

@@ -9,47 +9,45 @@
 #include "SDL_scancode.hpp"
 #include "SDL_video.hpp"
 
+SDL_NAMESPACE_BEGIN
+#include <SDL_keyboard.h>
+SDL_NAMESPACE_END
+
 namespace SDL
 {
-	namespace C
-	{
-		#include <SDL_keyboard.h>
-	}
-
-	struct Keysym
+	struct Keysym // TODO derive from SDL_NAMESPACE::SDL_Keysym
 	{
 		// this one is no ptr
-		C::SDL_Keysym self;
+		SDL_NAMESPACE::SDL_Keysym self;
 		
-		__alwaysinline
+		inline
 		Keysym()
 		{
 			// TODO: zero instead of zerop
 			zerop( &self );
 		}
 
-		__alwaysinline /* implicit */
-		Keysym( const C::SDL_Keysym & other )
+		/* implicit */ inline
+		Keysym( const SDL_NAMESPACE::SDL_Keysym & other )
 			: self( other )
 		{}
 
 		// TODO: maybe return a reference to the original data?
-		__alwaysinline
+		inline
 		Scancode
 		scancode() const
 		{
-			return Scancode( self.scancode );
-			return static_cast<Scancode::Code>( self.scancode );
+			return static_cast<Scancode>( self.scancode );
 		}
 
-		__alwaysinline
+		inline
 		Keymod
 		mod() const
 		{
 			return static_cast<Keymod>( self.mod );
 		}
 
-		__alwaysinline
+		inline
 		Keycode
 		sym() const
 		{
@@ -57,21 +55,43 @@ namespace SDL
 		}
 
 		// FIXME: should not be needed in the end
-		__alwaysinline
+		inline
 		Keysym &
-		operator=( const C::SDL_Keysym & other )
+		operator=( const SDL_NAMESPACE::SDL_Keysym & other )
 		{
 			self = other;
 			return *this;
 		}
 	};
 
-	// FIXME: no class
-	__alwaysinline
-	const Uint8 * GetKeyboardState( int * numkeys )
+	class Keyboard
 	{
-		return C::SDL_GetKeyboardState( numkeys );
-	}
+	public:
+		class State
+		{
+			const Uint8 * data; // do not free
+
+		public:
+			explicit constexpr inline
+			State( const Uint8 * data )
+				: data( data )
+			{}
+
+			constexpr inline
+			bool
+			operator[]( const Scancode scancode ) const
+			{
+				// A array element with a value of 1 means that the key is pressed and a value of 0 means that it is not.
+				return data[ to_underlying( scancode ) ] == 1;
+			}
+		};
+
+		static inline
+		State GetState( int * numkeys = nullptr )
+		{
+			return State( SDL_NAMESPACE::SDL_GetKeyboardState( numkeys ) );
+		}
+	};
 }
 
 #endif

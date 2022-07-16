@@ -6,39 +6,37 @@
 
 #include "SDL_pixels.hpp"
 
+SDL_NAMESPACE_BEGIN
+#include <SDL_rect.h>
+SDL_NAMESPACE_END
+
 namespace SDL
 {
-	namespace C
-	{
-		#include <SDL_rect.h>
-	}
-
 	struct Rect;
 
 	struct Point
-		: public C::SDL_Point
+		: public SDL_NAMESPACE::SDL_Point
 	{
-		__alwaysinline
+		constexpr inline
 		Point() noexcept
+			: SDL_NAMESPACE::SDL_Point{}
 		{}
 
-		__alwaysinline
-		Point( int x, int y ) noexcept
-		{
-			this->x = x;
-			this->y = y;
-		}
+		constexpr inline
+		Point( const int _x, const int _y ) noexcept
+			: SDL_NAMESPACE::SDL_Point{ x = _x, y = _y }
+		{}
 
-		bool InRect( const Rect & rect ) const;
+		bool InRect( const Rect & rect ) const noexcept;
 
-		__alwaysinline
+		constexpr inline
 		Point
-		operator + ( const Point & other ) const
+		operator + ( const Point & other ) const noexcept
 		{
 			return Point( x + other.x, y + other.y );
 		}
 
-		__alwaysinline
+		constexpr inline
 		Point &
 		operator += ( const Point & other )
 		{
@@ -47,14 +45,14 @@ namespace SDL
 			return *this;
 		}
 
-		__alwaysinline
+		constexpr inline
 		Point
 		operator - ( const Point & other ) const
 		{
 			return Point( x - other.x, y - other.y );
 		}
 
-		__alwaysinline
+		constexpr inline
 		Point &
 		operator -= ( const Point & other )
 		{
@@ -63,14 +61,14 @@ namespace SDL
 			return *this;
 		}
 		
-		__alwaysinline
+		constexpr inline
 		Point
 		operator * ( const int scale ) const
 		{
 			return Point( x * scale, y * scale );
 		}
 
-		__alwaysinline
+		constexpr inline
 		Point
 		operator * ( const float scale ) const
 		{
@@ -79,14 +77,14 @@ namespace SDL
 				static_cast<int>( y * scale ) );
 		}
 
-		__alwaysinline
+		constexpr inline
 		Point
 		operator / ( const int scale ) const
 		{
 			return Point( x / scale, y / scale );
 		}
 
-		__alwaysinline
+		constexpr inline
 		Point
 		operator / ( const float scale ) const
 		{
@@ -95,7 +93,7 @@ namespace SDL
 				static_cast<int>( y / scale ) );
 		}
 
-		/* TODO: GCC5.4 constexpr*/ __alwaysinline
+		constexpr inline
 		bool
 		operator == ( const Point & other ) const
 		{
@@ -103,7 +101,7 @@ namespace SDL
 				&& y == other.y;
 		}
 		
-		/* TODO: GCC5.4 constexpr*/ __alwaysinline
+		constexpr inline
 		bool
 		operator != ( const Point & other ) const
 		{
@@ -112,7 +110,7 @@ namespace SDL
 		}
 	};
 
-	__alwaysinline
+	inline
 	std::ostream &
 	operator<<( std::ostream & os, const Point p )
 	{
@@ -122,63 +120,52 @@ namespace SDL
 
 
 	struct Rect
-		: public C::SDL_Rect
+		: public SDL_NAMESPACE::SDL_Rect
 	{
-		__alwaysinline
+		constexpr inline
 		Rect() noexcept
+			: SDL_NAMESPACE::SDL_Rect{}
 		{}
 
-		explicit __alwaysinline
+		explicit constexpr inline
 		Rect( const int wh ) noexcept
-		{
-			this->x = 0;
-			this->y = 0;
-			this->w = wh;
-			this->h = wh;
-		}
+			: SDL_NAMESPACE::SDL_Rect{ x = 0, y = 0, w = wh, h = wh }
+		{}
 
-		__alwaysinline
-		Rect( const int w, const int h ) noexcept
-		{
-			this->x = 0;
-			this->y = 0;
-			this->w = w;
-			this->h = h;
-		}
+		constexpr inline
+		Rect( const int _w, const int _h ) noexcept
+			: SDL_NAMESPACE::SDL_Rect{ x = 0, y = 0, w = _w, h = _h }
+		{}
 
-		__alwaysinline
-		Rect( const int x, const int y, const int w, const int h ) noexcept
-		{
-			this->x = x;
-			this->y = y;
-			this->w = w;
-			this->h = h;
-		}
+		constexpr inline
+		Rect( const int _x, const int _y, const int _w, const int _h ) noexcept
+			: SDL_NAMESPACE::SDL_Rect{ x = _x, y = _y, w = _w, h = _h }
+		{}
 
-		__alwaysinline
+		inline
 		bool
-		ContainsPoint( const Point & pos ) const
+		ContainsPoint( const Point & pos ) const noexcept
 		{
 			return pos.InRect( *this );
 		}
 
-		__alwaysinline
+		inline
 		bool
-		CollidesWith( const Rect & pos ) const
+		CollidesWith( const Rect & pos ) const noexcept
 		{
-			return C::SDL_HasIntersection( this, &pos ) == C::SDL_TRUE;
+			return SDL_NAMESPACE::SDL_HasIntersection( this, &pos ) == SDL_NAMESPACE::SDL_TRUE;
 		}
 
-		__alwaysinline
+		constexpr inline
 		Rect
-		operator + ( const Point & pos ) const
+		operator + ( const Point & pos ) const noexcept
 		{
 			return Rect( x + pos.x, y + pos.y, w, h );
 		}
 
-		__alwaysinline
+		constexpr inline
 		Rect&
-		operator += ( const Point & pos )
+		operator += ( const Point & pos ) noexcept
 		{
 			x += pos.x;
 			y += pos.y;
@@ -186,11 +173,11 @@ namespace SDL
 		}
 	};
 
-	__alwaysinline
+	inline
 	bool
-	Point::InRect( const Rect & rect ) const
+	Point::InRect( const Rect & rect ) const noexcept
 	{
-		return C::SDL_PointInRect( this, &rect ) == C::SDL_TRUE;
+		return SDL_NAMESPACE::SDL_PointInRect( this, &rect ) == SDL_NAMESPACE::SDL_TRUE;
 	}
 }
 

@@ -17,181 +17,181 @@
 #include "SDL_touch.h"
 */
 
+SDL_NAMESPACE_BEGIN
+#include <SDL_events.h>
+SDL_NAMESPACE_END
+
 namespace SDL
 {
-	namespace C
-	{
-		#include <SDL_events.h>
-	}
-
 	class Event
 	{
-		// this one is no ptr, its a union, thats why we can't derive from it
-		C::SDL_Event self;
+		// this is no ptr, its a union, thats why it can't be derived from
+		SDL_NAMESPACE::SDL_Event self;
 
 	public:
-		enum class Type
-			: std::underlying_type<C::SDL_EventType>::type // this base should be uint32
+		ENUM_CLASS_BASE( Type, SDL_NAMESPACE::SDL_EventType )
 		{
-			FIRSTEVENT      = C::SDL_FIRSTEVENT,        /**< Unused (do not remove) */
-			QUIT            = C::SDL_QUIT,              /**< User-requested quit */
-			WINDOWEVENT     = C::SDL_WINDOWEVENT,       /**< Window state change */
-			SYSWMEVENT      = C::SDL_SYSWMEVENT,        /**< System specific event */
-			KEYDOWN         = C::SDL_KEYDOWN,           /**< Key pressed */
-			KEYUP           = C::SDL_KEYUP,             /**< Key released */
-			TEXTEDITING     = C::SDL_TEXTEDITING,       /**< Keyboard text editing (composition) */
-			TEXTINPUT       = C::SDL_TEXTINPUT,         /**< Keyboard text input */
-			MOUSEMOTION     = C::SDL_MOUSEMOTION,       /**< Mouse moved */
-			MOUSEBUTTONDOWN = C::SDL_MOUSEBUTTONDOWN,   /**< Mouse button pressed */
-			MOUSEBUTTONUP   = C::SDL_MOUSEBUTTONUP,     /**< Mouse button released */
-			MOUSEWHEEL      = C::SDL_MOUSEWHEEL,        /**< Mouse wheel motion */
-			JOYAXISMOTION   = C::SDL_JOYAXISMOTION,     /**< Joystick axis motion */
-			JOYBALLMOTION   = C::SDL_JOYBALLMOTION,     /**< Joystick trackball motion */
-			JOYHATMOTION    = C::SDL_JOYHATMOTION,      /**< Joystick hat position change */
-			JOYBUTTONDOWN   = C::SDL_JOYBUTTONDOWN,     /**< Joystick button pressed */
-			JOYBUTTONUP     = C::SDL_JOYBUTTONUP,       /**< Joystick button released */
-			FINGERDOWN      = C::SDL_FINGERDOWN,
-			FINGERUP        = C::SDL_FINGERUP,
-			FINGERMOTION    = C::SDL_FINGERMOTION,
-			DOLLARGESTURE   = C::SDL_DOLLARGESTURE,
-			DOLLARRECORD    = C::SDL_DOLLARRECORD,
-			MULTIGESTURE    = C::SDL_MULTIGESTURE,
-			CLIPBOARDUPDATE = C::SDL_CLIPBOARDUPDATE,   /**< The clipboard changed */
-			DROPFILE        = C::SDL_DROPFILE,          /**< Drag and Drop: The system requests a file open */
-			USEREVENT       = C::SDL_USEREVENT,         /**< Events ::SDL_USEREVENT through ::SDL_LASTEVENT are for your use, and should be allocated with SDL_RegisterEvents() */
-			LASTEVENT       = C::SDL_LASTEVENT,         /**< This last event is only for bounding internal arrays */
+			FirstEvent          = SDL_NAMESPACE::SDL_FIRSTEVENT, 
+			Quit                = SDL_NAMESPACE::SDL_QUIT,
+			WindowEvent         = SDL_NAMESPACE::SDL_WINDOWEVENT,
+			SyswmEvent          = SDL_NAMESPACE::SDL_SYSWMEVENT,
+			KeyDown             = SDL_NAMESPACE::SDL_KEYDOWN,
+			KeyUp               = SDL_NAMESPACE::SDL_KEYUP,
+			TextEditing         = SDL_NAMESPACE::SDL_TEXTEDITING,
+			TextInput           = SDL_NAMESPACE::SDL_TEXTINPUT,
+			MouseMotion         = SDL_NAMESPACE::SDL_MOUSEMOTION,
+			MouseButtonDown     = SDL_NAMESPACE::SDL_MOUSEBUTTONDOWN,
+			MouseButtonUp       = SDL_NAMESPACE::SDL_MOUSEBUTTONUP,
+			MouseWheel          = SDL_NAMESPACE::SDL_MOUSEWHEEL,
+			JoyAxisMotion       = SDL_NAMESPACE::SDL_JOYAXISMOTION,
+			JoyBallMotion       = SDL_NAMESPACE::SDL_JOYBALLMOTION,
+			JoyHatMotion        = SDL_NAMESPACE::SDL_JOYHATMOTION,
+			JoyButtonDown       = SDL_NAMESPACE::SDL_JOYBUTTONDOWN,
+			JoyButtonUp         = SDL_NAMESPACE::SDL_JOYBUTTONUP,
+			FingerDown          = SDL_NAMESPACE::SDL_FINGERDOWN,
+			FingerUp            = SDL_NAMESPACE::SDL_FINGERUP,
+			FingerMotion        = SDL_NAMESPACE::SDL_FINGERMOTION,
+			DollarGesture       = SDL_NAMESPACE::SDL_DOLLARGESTURE,
+			DollarRecord        = SDL_NAMESPACE::SDL_DOLLARRECORD,
+			MultiGesture        = SDL_NAMESPACE::SDL_MULTIGESTURE,
+			ClipboardUpdate     = SDL_NAMESPACE::SDL_CLIPBOARDUPDATE,
+			DropFile            = SDL_NAMESPACE::SDL_DROPFILE,
+			UserEvent           = SDL_NAMESPACE::SDL_USEREVENT,
+			LastEvent           = SDL_NAMESPACE::SDL_LASTEVENT,
 		};
 
-		union EventType
-		{
-			Uint32 int_type;
-			Type   enum_type;
-		};
+		// Not gonna wrap all those, for now just alias them
+		using Common            = SDL_NAMESPACE::SDL_CommonEvent;
+		using Window            = SDL_NAMESPACE::SDL_WindowEvent;
+		using Keyboard          = SDL_NAMESPACE::SDL_KeyboardEvent;
+		using TextEditing       = SDL_NAMESPACE::SDL_TextEditingEvent;
+		using TextInput         = SDL_NAMESPACE::SDL_TextInputEvent;
+		using MouseMotion       = SDL_NAMESPACE::SDL_MouseMotionEvent;
+		using MouseButton       = SDL_NAMESPACE::SDL_MouseButtonEvent;
+		using MouseWheel        = SDL_NAMESPACE::SDL_MouseWheelEvent;
+		using JoyAxis           = SDL_NAMESPACE::SDL_JoyAxisEvent;
+		using JoyBall           = SDL_NAMESPACE::SDL_JoyBallEvent;
+		using JoyHat            = SDL_NAMESPACE::SDL_JoyHatEvent;
+		using JoyButton         = SDL_NAMESPACE::SDL_JoyButtonEvent;
+		using JoyDevice         = SDL_NAMESPACE::SDL_JoyDeviceEvent;
+		using ControllerAxis    = SDL_NAMESPACE::SDL_ControllerAxisEvent;
+		using ControllerButton  = SDL_NAMESPACE::SDL_ControllerButtonEvent;
+		using ControllerDevice  = SDL_NAMESPACE::SDL_ControllerDeviceEvent;
+		using AudioDevice       = SDL_NAMESPACE::SDL_AudioDeviceEvent;
+		using TouchFinger       = SDL_NAMESPACE::SDL_TouchFingerEvent;
+		using MultiGesture      = SDL_NAMESPACE::SDL_MultiGestureEvent;
+		using DollarGesture     = SDL_NAMESPACE::SDL_DollarGestureEvent;
+		using Drop              = SDL_NAMESPACE::SDL_DropEvent;
+		using Quit              = SDL_NAMESPACE::SDL_QuitEvent;
+		using OS                = SDL_NAMESPACE::SDL_OSEvent;
+		using User              = SDL_NAMESPACE::SDL_UserEvent;
+		using SysWM             = SDL_NAMESPACE::SDL_SysWMEvent;
+
+		Type             & type            (){ return reinterpret_cast<Type &>( self.type ); }
+		Common           & common          (){ return self.common;   }
+		Window           & window          (){ return self.window;   }
+		Keyboard         & keyboard        (){ return self.key;      }
+		TextEditing      & textediting     (){ return self.edit;     }
+		TextInput        & textinput       (){ return self.text;     }
+		MouseMotion      & mousemotion     (){ return self.motion;   }
+		MouseButton      & mousebutton     (){ return self.button;   }
+		MouseWheel       & mousewheel      (){ return self.wheel;    }
+		JoyAxis          & joyaxis         (){ return self.jaxis;    }
+		JoyBall          & joyball         (){ return self.jball;    }
+		JoyHat           & joyhat          (){ return self.jhat;     }
+		JoyButton        & joybutton       (){ return self.jbutton;  }
+		JoyDevice        & joydevice       (){ return self.jdevice;  }
+		ControllerAxis   & controlleraxis  (){ return self.caxis;    }
+		ControllerButton & controllerbutton(){ return self.cbutton;  }
+		ControllerDevice & controllerdevice(){ return self.cdevice;  }
+		AudioDevice      & audiodevice     (){ return self.adevice;  }
+		Quit             & quit            (){ return self.quit;     }
+		User             & user            (){ return self.user;     }
+		SysWM            & syswm           (){ return self.syswm;    }
+		TouchFinger      & touchfinger     (){ return self.tfinger;  }
+		MultiGesture     & multigesture    (){ return self.mgesture; }
+		DollarGesture    & dollargesture   (){ return self.dgesture; }
+		Drop             & drop            (){ return self.drop;     }
 
 		// STATIC
-		static __alwaysinline
+		static inline
 		void
 		Pump()
 		{
-			C::SDL_PumpEvents();
+			SDL_NAMESPACE::SDL_PumpEvents();
 		}
 
-		static __alwaysinline
+		static inline
 		int
-		Poll( Event& evt )
+		Poll( Event & evt )
 		{
-			return C::SDL_PollEvent( evt );
+			return SDL_NAMESPACE::SDL_PollEvent( evt );
 		}
 
-		/*
-		static __alwaysinline
+		/* use instance method
+		static inline
 		int
 		Push( Event & evt )
 		{
-			return C::SDL_PushEvent( evt );
+			return SDL_NAMESPACE::SDL_PushEvent( evt );
 		}
 		*/
 
 		// CONSTRUCTION
-		__alwaysinline
+		inline
 		Event()
 		{
 			// TODO: zero instead of zerop
 			zerop( &self );
-			self.type = base_cast( Type::FIRSTEVENT );
+			self.type = to_underlying( Type::FirstEvent );
 		}
 
-		/* implicit */ __alwaysinline
+		/* implicit */ inline
 		Event( const Type type )
 		{
 			zerop( &self );
-			self.type = base_cast( type );
+			self.type = to_underlying( type );
 		}
 
-		/* implicit */ __alwaysinline
-		Event( const C::SDL_Event & evt )
+		/* implicit */ inline
+		Event( const SDL_NAMESPACE::SDL_Event & evt )
 		{
 			self = evt;
 		}
 
 		// INSTANCE
-		__alwaysinline
+		inline
 		int
 		Push()
 		{
-			return C::SDL_PushEvent( *this );
-		}
-
-		// FIXME: is this portable? needs -fno-strict-aliasing to work :(
-		__alwaysinline
-		const Type &
-		type() const noexcept
-		{
-			return reinterpret_cast<const Type &>( this->self.type );
-		}
-
-		__alwaysinline
-		const C::SDL_KeyboardEvent &
-		Keyboard() const noexcept
-		{
-			return this->self.key;
-		}
-
-		/* right now useless => disabled
-		__alwaysinline
-		C::SDL_TextEditingEvent & TextEditing() noexcept
-		{
-			return this->self.edit;
-		}
-
-		__alwaysinline
-		C::SDL_TextInputEvent & TextInput() noexcept
-		{
-			return this->self.text;
-		}
-		*/
-
-		__alwaysinline
-		const C::SDL_MouseButtonEvent &
-		MouseButton() const noexcept
-		{
-			return this->self.button;
-		}
-
-		__alwaysinline
-		const C::SDL_MouseMotionEvent &
-		MouseMotion() const noexcept
-		{
-			return this->self.motion;
-		}
-
-		__alwaysinline
-		const C::SDL_JoyAxisEvent &
-		JoyAxis() const noexcept
-		{
-			return this->self.jaxis;
-		}
-
-		__alwaysinline
-		const C::SDL_JoyButtonEvent &
-		JoyButton() const noexcept
-		{
-			return this->self.jbutton;
+			return SDL_NAMESPACE::SDL_PushEvent( *this );
 		}
 
 		// AUTOCASTS
-		__alwaysinline
-		operator C::SDL_Event * () noexcept
+		inline
+		operator SDL_NAMESPACE::SDL_Event * () noexcept
 		{
 			return &this->self;
 		}
 
-		__alwaysinline
-		operator const C::SDL_Event * () const noexcept
+		inline
+		operator const SDL_NAMESPACE::SDL_Event * () const noexcept
 		{
 			return &this->self;
 		}
 	};
+
+	ENUM_INFO_BASE( Event::Type, SDL_NAMESPACE::SDL_EventType );
+
+	// FIXME: is this portable? needs -fno-strict-aliasing to work :(
+	/*inline
+	const Event::Type &
+	Event::type() const noexcept
+	{
+		auto & a = this->self.type;
+		return to_derived<Type>( a );
+		return reinterpret_cast<const Type &>( this->self.type );
+	}*/
 }
 
 #endif

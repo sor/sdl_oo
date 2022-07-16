@@ -15,7 +15,7 @@ namespace GL
 
 	// uses current GL_ARRAY_BUFFER
 	/*
-	__alwaysinline
+	inline
 	static
 	void
 	VertexAttribPointer(
@@ -29,7 +29,7 @@ namespace GL
 		glVertexAttribPointer( index, size, type, normalized, stride, pointer );
 	}*/
 	/*
-	__alwaysinline
+	inline
 	static
 	void
 	EnableVertexAttribArray( GLuint index )
@@ -42,25 +42,25 @@ namespace GL
 		GLuint _id;
 
 	public:
-		__alwaysinline
+		inline
 		operator GLuint() const noexcept
 		{
 			return _id;
 		}
 
-		__alwaysinline
+		inline
 		Shader()
 		{
 			_id = 0;
 		}
 
-		__alwaysinline
+		inline
 		~Shader()
 		{
 			glDeleteShader( _id ); // A value of 0 for shader will be silently ignored.
 		}
 
-		__alwaysinline
+		inline
 		Shader &
 		Create( const GLenum shaderType )
 		{
@@ -69,7 +69,7 @@ namespace GL
 
 			return *this;
 		}
-		__alwaysinline
+		inline
 		Shader &
 		SourceFile( const char * filename )
 		{
@@ -83,7 +83,7 @@ namespace GL
 			return *this;
 		}
 
-		__alwaysinline
+		inline
 		Shader &
 		Compile()
 		{
@@ -96,7 +96,7 @@ namespace GL
 			return *this;
 		}
 
-		__alwaysinline
+		inline
 		GLint
 		GetIV( GLenum pname )
 		{
@@ -121,25 +121,25 @@ namespace GL
 		GLint _id;
 
 	public:
-		__alwaysinline
+		inline
 		operator GLint() const noexcept
 		{
 			return _id;
 		}
 
-		__alwaysinline
+		inline
 		Attrib()
 		{
 			_id = 0;
 		}
 
-		__alwaysinline
+		inline
 		Attrib( GLint id )
 		{
 			_id = id;
 		}
 		
-		__alwaysinline
+		inline
 		Attrib &
 		Enable()
 		{
@@ -147,7 +147,7 @@ namespace GL
 			return *this;
 		}
 
-		__alwaysinline
+		inline
 		Attrib &
 		Disable()
 		{
@@ -156,7 +156,7 @@ namespace GL
 		}
 		
 		// type in GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_FIXED, or GL_FLOAT 
-		__alwaysinline
+		inline
 		Attrib &
 		Pointer(
 			GLint			size,
@@ -169,7 +169,7 @@ namespace GL
 			return *this;
 		}
 
-		__alwaysinline
+		inline
 		Attrib &
 		Pointer(
 			GLint		size,
@@ -187,7 +187,7 @@ namespace GL
 	{
 		// +++ STATIC +++
 	public:
-		__alwaysinline
+		inline
 		static
 		void
 		UnUse()
@@ -200,26 +200,26 @@ namespace GL
 		GLuint _id;
 
 	public:
-		__alwaysinline
+		inline
 		operator GLuint() const noexcept
 		{
 			return _id;
 		}
 
-		__alwaysinline
+		inline
 		Program()
 		{
 			_id = 0;
 		}
 
-		__alwaysinline
+		inline
 		~Program()
 		{
 			if( _id )
 				glDeleteProgram( _id ); // A value of 0 for program will be silently ignored. IF OpenGL is initialized... maybe it isnt? failed without the guard!
 		}
 
-		__alwaysinline
+		inline
 		Program &
 		Create()
 		{
@@ -229,7 +229,7 @@ namespace GL
 			return *this;
 		}
 
-		__alwaysinline
+		inline
 		Program &
 		AttachShader( const Shader & shader )
 		{
@@ -237,7 +237,7 @@ namespace GL
 			return *this;
 		}
 
-		__alwaysinline
+		inline
 		Program &
 		DetachShader( const Shader & shader )
 		{
@@ -245,7 +245,7 @@ namespace GL
 			return *this;
 		}
 
-		__alwaysinline
+		inline
 		Program &
 		BindFragDataLocation( GLuint colorNumber, const char * name )
 		{
@@ -253,7 +253,7 @@ namespace GL
 			return *this;
 		}
 
-		__alwaysinline
+		inline
 		Program &
 		Link()
 		{
@@ -269,7 +269,7 @@ namespace GL
 			return *this;
 		}
 		
-		__alwaysinline
+		inline
 		Program &
 		Use()
 		{
@@ -277,14 +277,14 @@ namespace GL
 			return *this;
 		}
 		
-		__alwaysinline
+		inline
 		Attrib
 		GetAttrib( const GLchar *name )
 		{
 			return Attrib( glGetAttribLocation( _id, name ) );
 		}
 
-		__alwaysinline
+		inline
 		GLint
 		GetIV( GLenum pname )
 		{
@@ -309,7 +309,7 @@ namespace GL
 		GLuint _id;
 
 	public:
-		__alwaysinline
+		inline
 		static
 		void
 		UnBind()
@@ -317,13 +317,13 @@ namespace GL
 			glBindVertexArray( 0 );
 		}
 
-		__alwaysinline
+		inline
 		VertexArray()
 		{
 			_id = 0;
 		}
 
-		__alwaysinline
+		inline
 		VertexArray &
 		Gen()
 		{
@@ -333,13 +333,13 @@ namespace GL
 			return *this;
 		}
 
-		__alwaysinline
+		inline
 		operator GLuint() const noexcept
 		{
 			return _id;
 		}
 
-		__alwaysinline
+		inline
 		VertexArray &
 		Bind()
 		{
@@ -369,7 +369,7 @@ namespace GL
 
 		// +++ STATIC +++
 	public:
-		__alwaysinline
+		inline
 		static
 		void
 		UnBind()
@@ -382,19 +382,19 @@ namespace GL
 		GLuint _id;
 
 	public:
-		__alwaysinline
+		inline
 		operator GLuint() const noexcept
 		{
 			return _id;
 		}
 
-		__alwaysinline
+		inline
 		Buffer()
 		{
 			_id = 0;
 		}
 
-		__alwaysinline
+		inline
 		Buffer &
 		Gen()
 		{
@@ -404,7 +404,7 @@ namespace GL
 			return *this;
 		}
 
-		__alwaysinline
+		inline
 		Buffer &
 		Bind()
 		{
@@ -412,7 +412,7 @@ namespace GL
 			return *this;
 		}
 		
-		__alwaysinline
+		inline
 		Buffer &
 		Alloc( GLsizeiptr size, GLenum usage )
 		{
@@ -420,7 +420,7 @@ namespace GL
 			return *this;
 		}
 
-		__alwaysinline
+		inline
 		Buffer &
 		Data( GLsizeiptr size, const GLvoid* data, GLenum usage )
 		{
@@ -428,7 +428,7 @@ namespace GL
 			return *this;
 		}
 
-		__alwaysinline
+		inline
 		Buffer &
 		SubData( GLintptr offset, GLsizeiptr size, const GLvoid* data )
 		{
@@ -443,7 +443,7 @@ namespace GL
 
 namespace GLEW
 {
-	__alwaysinline
+	inline
 	static void Init( const bool experimental = false )
 	{
 		GL::glewExperimental = experimental;
