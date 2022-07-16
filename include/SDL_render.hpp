@@ -367,6 +367,7 @@ namespace SDL
 
 		// Draws the selected sprite at the given position with a scaled size
 		void DrawSprite( const Point & pos, const Point & count, const Point & index, const float scale ) noexcept;
+		void DrawSprite( const Point & pos, const Point & count, const Rect & indexAndAmount, const float scale ) noexcept;
 
 		int Update(Surface & surface, const Rect * rect = nullptr)
 		{
@@ -591,6 +592,23 @@ namespace SDL
 		);
 	}
 
+	// Draws the selected sprite at the given position with a scaled size
+	__alwaysinline
+	void
+	Texture::DrawSprite( const Point & pos, const Point & count, const Rect & indexAndAmount, const float scale ) noexcept
+	{
+		const int w_rel = this->w / count.x;
+		const int h_rel = this->h / count.y;
+		const Rect source( w_rel * indexAndAmount.x, h_rel * indexAndAmount.y, w_rel * indexAndAmount.w, h_rel * indexAndAmount.h );
+
+		this->rend.Copy(
+			*this,
+			source,
+			Rect(pos.x, pos.y, (int) (w_rel * indexAndAmount.w * scale), (int) (h_rel * indexAndAmount.h * scale) )
+		);
+	}
+
+	__alwaysinline
 	inline
 	int
 	Texture::SetAlphaMod( const Uint8 alpha )
