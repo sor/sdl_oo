@@ -593,7 +593,7 @@ namespace SDL
 	}
 
 	// Draws the selected sprite at the given position with a scaled size
-	__alwaysinline
+	inline
 	void
 	Texture::DrawSprite( const Point & pos, const Point & count, const Rect & indexAndAmount, const float scale ) noexcept
 	{
@@ -608,7 +608,6 @@ namespace SDL
 		);
 	}
 
-	__alwaysinline
 	inline
 	int
 	Texture::SetAlphaMod( const Uint8 alpha )
